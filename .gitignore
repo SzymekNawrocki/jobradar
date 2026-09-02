@@ -1,0 +1,12 @@
+# generowane przez radar.py — nie wersjonujemy
+seen.json
+oferty.html
+
+# notatki robocze (markdown) — tylko README trafia do repo
+*.md
+!README.md
+
+
+# Python
+__pycache__/
+*.pyc
