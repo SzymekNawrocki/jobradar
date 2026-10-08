@@ -11,11 +11,12 @@ Kazdy portal ma dwie funkcje:
     parsuj_<portal>(dane) -> lista ofert   (czysta, bez sieci — testowana)
     pobierz_<portal>()    -> lista         (siec + paginacja)
 
-Wspolny format oferty (rozszerza ten z providers.py):
+Wspolny format oferty:
 
     {
-      "id":       "jj-...", "nf-...", "pr-...", "tp-...", "bd-..."
-      "portal":   "justjoin" / "nofluff" / "pracuj" / "protocol" / "bulldog",
+      "id":       "jj-...", "nf-...", "pr-...", "tp-...", "bd-...", "sj-...", "li-..."
+      "portal":   "justjoin" / "nofluff" / "pracuj" / "protocol" / "bulldog"
+                  / "solid" / "linkedin",
       "tytul", "firma", "url",
       "miasta":   ["Warszawa", ...],
       "lokacja":  "Warszawa, Kraków" (to samo jako tekst),
@@ -35,6 +36,8 @@ Zrodla danych (zweryfikowane 2026-10-08):
   pracuj    -> it.pracuj.pl, JSON wbudowany w strone (__NEXT_DATA__)
   protocol  -> theprotocol.it, __NEXT_DATA__
   bulldog   -> bulldogjob.pl, __NEXT_DATA__ (data tylko na stronie oferty)
+  solid     -> solid.jobs/public-api/offers (feed dla agregatorow, JSON)
+  linkedin  -> linkedin.com/jobs-guest (HTML kart, bez logowania; tylko Warszawa)
 
 Uwaga na daty: JustJoin i Pracuj podaja tez date ODSWIEZENIA (platny "bump"),
 przez ktora miesieczna oferta wyglada na dzisiejsza. Bierzemy zawsze pierwsza
@@ -42,10 +45,12 @@ publikacje — liczy sie, jak dawno oferta naprawde wisi.
 """
 
 import gzip
+import html
 import json
 import math
 import re
 import time
+import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -561,6 +566,138 @@ def pobierz_bulldog():
     return oferty
 
 
+# --------------------------------------------------------------------------
+# SolidJobs
+# --------------------------------------------------------------------------
+
+# Publiczny feed dla agregatorow (z niego korzystal jobhunt). Filtrow nie ma,
+# ale jest posortowany od najnowszych: pierwsze 500 ofert to ~2 tygodnie,
+# a starsze nas nie obchodza. Jedno zapytanie, ~0,8 MB.
+SJ_URL = "https://solid.jobs/public-api/offers?campaign=jobradar&pageSize=500&pageIndex=0"
+SJ_UMOWY = {"B2B": "b2b", "UoP": "uop", "UZ": "zlecenie", "Staż": "staz"}
+
+
+def parsuj_solid(dane):
+    oferty = []
+    for j in dane.get("jobs", []):
+        if j.get("division") != "IT":  # feed ma tez sprzedaz, finanse, HR...
+            continue
+        s = j.get("salary") or {}
+        od = do = None
+        if s.get("currency") == "PLN":
+            od = _miesiecznie(s.get("from"), s.get("period"))
+            do = _miesiecznie(s.get("to"), s.get("period"))
+        tryby = (["zdalna"] if j.get("isRemote") else
+                 ["hybrydowa"] if j.get("isHybrid") else ["biuro"])
+        oferty.append(_oferta(
+            id=f"sj-{j['jobOfferKey']}",
+            portal="solid",
+            tytul=j.get("title", ""),
+            firma=j.get("company", ""),
+            url=j.get("url", ""),
+            miasta=j.get("locations") or [],
+            data=_ts(j.get("validFrom")),
+            wygasa=_ts(j.get("validTo")),
+            poziomy=_poziomy([j.get("experienceLevel")]),
+            tryby=tryby,
+            umowy=[SJ_UMOWY.get(s.get("employmentType"), "inna")] if s else [],
+            wid_od=od, wid_do=do,
+            stack=[k.get("name") for k in j.get("skills") or []],
+            kategoria=j.get("category", ""),
+        ))
+    return oferty
+
+
+def pobierz_solid():
+    dane = json.loads(_pobierz(SJ_URL, naglowki={"Accept": "application/json"}))
+    return [o for o in parsuj_solid(dane) if _dla_mnie(o)]
+
+
+# --------------------------------------------------------------------------
+# LinkedIn (publiczna wyszukiwarka, bez logowania)
+# --------------------------------------------------------------------------
+
+# Tu sa programy stazowe korporacji (Google, Revolut, Intel...), ktorych nie
+# ma na portalach IT. Filtry poziomu, branzy i "zdalnie" LinkedIn bez
+# logowania ignoruje, wiec: tylko Warszawa, ostatni tydzien, a poziom i IT
+# rozpoznajemy po tytule. "praktyki IT" (wyszukiwanie jest rozmyte) lapie
+# ~95% stazy/juniorow IT w Warszawie — sprawdzone na 12 zapytaniach.
+# Wiecej zapytan = ryzyko HTTP 429 (zlapalismy je po ~300 z rzedu).
+LI_URL = ("https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search"
+          "?keywords={fraza}&location=Warszawa&f_TPR=r604800&start={od}")
+LI_FRAZY = ["praktyki IT", "software intern"]
+LI_NA_STRONE = 10
+LI_MAKS_STRON = 40
+LI_PRZERWA_S = 1.0
+
+LI_STAZ = re.compile(r"\b(intern|internship|sta[żz]\w*|praktyk\w*|trainee)\b", re.I)
+LI_JUNIOR = re.compile(r"\b(junior|jr|m[łl]odsz\w*|graduate|entry[- ]level|absolwent\w*)\b", re.I)
+LI_NIE = re.compile(r"\b(senior|lead|principal|staff|head|manager|kierownik\w*|dyrektor\w*)\b", re.I)
+LI_IT = re.compile(
+    r"develop|programi|software|oprogramowan|tester|\bqa\b|test automation|devops"
+    r"|\bsre\b|site reliability|front-?end|back-?end|full[- ]?stack|python|java"
+    r"|\.net|c\+\+|c#|golang|react|angular|node|\bit\b|cloud|security|cyber"
+    r"|\bsoc\b|sysadmin|system administrator|administrator system|help ?desk"
+    r"|service desk|data (analyst|engineer|scien)|analytics engineer|analityk danych"
+    r"|in[żz]ynier danych|machine learning|\bml\b|\bai\b|\bllm|\bweb|mobile|android"
+    r"|\bios\b|abap|\bsap\b|salesforce|\bsql\b|\bbi\b|power platform|\brpa\b"
+    r"|\bux\b|\bui\b", re.I)
+
+
+def _linkedin_poziomy(tytul):
+    if LI_NIE.search(tytul):
+        return []
+    return [p for p, wzor in (("staz", LI_STAZ), ("junior", LI_JUNIOR)) if wzor.search(tytul)]
+
+
+def parsuj_linkedin(strona):
+    """Strona wynikow (HTML, 10 kart) -> oferty staz/junior IT. Reszte pomija."""
+    oferty = []
+    for karta in strona.split("<li>")[1:]:
+        id_ = re.search(r"jobPosting:(\d+)", karta)
+        tytul = re.search(r'base-search-card__title">\s*(.*?)\s*</h3>', karta, re.S)
+        firma = re.search(r'base-search-card__subtitle">.*?>\s*(.*?)\s*</a>', karta, re.S)
+        miejsce = re.search(r'job-search-card__location">\s*(.*?)\s*</span>', karta, re.S)
+        data = re.search(r'<time[^>]*datetime="(\d{4}-\d\d-\d\d)"', karta)
+        if not (id_ and tytul):
+            continue
+        tytul = html.unescape(tytul.group(1))
+        poziomy = _linkedin_poziomy(tytul)
+        if not poziomy or not LI_IT.search(tytul):
+            continue
+        miasto = miejsce.group(1).split(",")[0] if miejsce else ""
+        oferty.append(_oferta(
+            id=f"li-{id_.group(1)}",
+            portal="linkedin",
+            tytul=tytul,
+            firma=html.unescape(firma.group(1)) if firma else "",
+            url=f"https://www.linkedin.com/jobs/view/{id_.group(1)}",
+            miasta=["Warszawa" if miasto == "Warsaw" else miasto],
+            # sam dzien; przy ponownym wystawieniu oferty LinkedIn daje nowa date
+            data=_ts(data.group(1) + "T00:00:00") if data else 0,
+            poziomy=poziomy,
+        ))
+    return oferty
+
+
+def pobierz_linkedin():
+    wynik = {}
+    for fraza in LI_FRAZY:
+        for nr in range(LI_MAKS_STRON):
+            strona = _pobierz(LI_URL.format(fraza=urllib.parse.quote(fraza),
+                                            od=nr * LI_NA_STRONE))
+            if "<li>" not in strona:  # koniec wynikow
+                break
+            for o in parsuj_linkedin(strona):
+                # ta sama oferta bywa wystawiona kilka razy (rozne id) — zostaje
+                # jedna, zawsze ta sama, zeby Twoj status przy niej nie skakal
+                k = (o["tytul"].lower(), o["firma"].lower())
+                if k not in wynik or o["id"] < wynik[k]["id"]:
+                    wynik[k] = o
+            time.sleep(LI_PRZERWA_S)
+    return [o for o in wynik.values() if _dla_mnie(o)]
+
+
 # nazwa portalu -> funkcja pobierajaca
 PORTALE = {
     "justjoin": pobierz_justjoin,
@@ -568,4 +705,6 @@ PORTALE = {
     "pracuj": pobierz_pracuj,
     "protocol": pobierz_protocol,
     "bulldog": pobierz_bulldog,
+    "solid": pobierz_solid,
+    "linkedin": pobierz_linkedin,
 }

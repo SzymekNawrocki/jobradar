@@ -19,6 +19,9 @@ POLA = {"id", "portal", "tytul", "firma", "url", "miasta", "lokacja", "data",
 
 
 def wczytaj(nazwa):
+    html = FIXTURY / f"{nazwa}.html"  # LinkedIn oddaje HTML, reszta JSON
+    if html.exists():
+        return html.read_text(encoding="utf-8")
     return json.loads((FIXTURY / f"{nazwa}.json").read_text(encoding="utf-8"))
 
 
@@ -157,6 +160,56 @@ class Bulldog(unittest.TestCase):
 
     def test_miasta_z_listy_po_przecinku(self):
         self.assertIn("Warszawa", po_tytule(self.oferty, "Fullstack Mobile")["miasta"])
+
+
+class Solid(unittest.TestCase):
+    def setUp(self):
+        self.oferty = portale.parsuj_solid(wczytaj("solid"))
+
+    def test_tylko_dzial_it(self):
+        self.assertNotIn("Agent Call Center", " ".join(o["tytul"] for o in self.oferty))
+
+    def test_pola(self):
+        o = po_tytule(self.oferty, "PHP Developer")
+        self.assertEqual((o["poziomy"], o["tryby"], o["umowy"]), (["junior"], ["zdalna"], ["b2b"]))
+        self.assertEqual((o["wid_od"], o["wid_do"]), (11800, 13400))
+        self.assertEqual(o["data"], portale._ts("2026-10-05T12:31:36.6577155+02:00"))
+        self.assertTrue(portale._dla_mnie(o))
+
+    def test_trainee_to_staz_a_zero_to_brak_widelek(self):
+        o = po_tytule(self.oferty, "System Analysis Trainee")
+        self.assertEqual(o["poziomy"], ["staz"])
+        self.assertEqual((o["wid_od"], o["wid_do"]), (None, 4900))
+
+
+class LinkedIn(unittest.TestCase):
+    def setUp(self):
+        self.oferty = portale.parsuj_linkedin(wczytaj("linkedin"))
+        self.tytuly = " | ".join(o["tytul"] for o in self.oferty)
+
+    def test_staze_it_przechodza(self):
+        o = po_tytule(self.oferty, "Cybersecurity Operations Intern")
+        self.assertEqual((o["firma"], o["miasta"], o["poziomy"]), ("EY", ["Warszawa"], ["staz"]))
+        self.assertEqual(o["url"], f"https://www.linkedin.com/jobs/view/{o['id'][3:]}")
+        self.assertEqual(o["data"], portale._ts("2026-10-07T00:00:00"))
+
+    def test_polskie_znaki_i_junior(self):
+        self.assertEqual(po_tytule(self.oferty, "Młodszy Programista")["poziomy"], ["junior"])
+
+    def test_staz_spoza_it_odpada(self):
+        self.assertNotIn("Projektów Strategicznych", self.tytuly)
+        self.assertNotIn("Compliance", self.tytuly)
+
+    def test_bez_poziomu_w_tytule_odpada(self):
+        self.assertNotIn("ITAM technical analyst", self.tytuly)
+
+    def test_poziom_z_tytulu(self):
+        p = portale._linkedin_poziomy
+        self.assertEqual(p("Stażysta/Stażystka Power BI Developer"), ["staz"])
+        self.assertEqual(p("Graduate software engineer"), ["junior"])
+        self.assertEqual(p("Senior Java Developer"), [])
+        self.assertEqual(p("Product manager, summer intern"), [])
+        self.assertEqual(p("Internal Tools Developer"), [])  # "internal" to nie "intern"
 
 
 class Normalizacja(unittest.TestCase):

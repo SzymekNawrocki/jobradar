@@ -123,7 +123,8 @@ const tryby = new Set();
 let maksDni = 7;  // najwazniejszy filtr: swiezosc (0 = bez limitu)
 
 const PORTALE = { justjoin: "JustJoin", nofluff: "NoFluff", pracuj: "Pracuj",
-                  protocol: "theprotocol", bulldog: "Bulldog" };
+                  protocol: "theprotocol", bulldog: "Bulldog",
+                  solid: "SolidJobs", linkedin: "LinkedIn" };
 const TRYBY = { zdalna: "zdalnie", hybrydowa: "hybrydowo", biuro: "biuro" };
 
 async function wczytaj() {
@@ -136,10 +137,17 @@ async function wczytaj() {
 
 function pokazSkan(skan) {
   const el = document.getElementById("skan-info");
-  if (!skan.kiedy) { el.textContent = "Jeszcze nie było skanu."; return; }
+  // skan w tle — dociagamy wynik, gdy sie skonczy
+  clearTimeout(pokazSkan.czekam);
+  if (skan.trwa) pokazSkan.czekam = setTimeout(wczytaj, 10 * 1000);
+  if (!skan.kiedy) {
+    el.textContent = skan.trwa ? "⏳ Pierwszy skan portali (~30 s)…" : "Jeszcze nie było skanu.";
+    return;
+  }
   const kiedy = new Date(skan.kiedy * 1000).toLocaleString("pl-PL",
     { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-  el.innerHTML = `Ostatni skan: ${kiedy} · ${OFERTY.length} ogłoszeń` +
+  el.innerHTML = (skan.trwa ? "⏳ Skanuję portale (~30 s)… · " : "") +
+    `Ostatni skan: ${kiedy} · ${OFERTY.length} ogłoszeń` +
     skan.bledy.map(b => ` · <span class="blad">⚠ ${esc(b)}</span>`).join("");
 }
 

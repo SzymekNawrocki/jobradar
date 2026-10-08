@@ -1,0 +1,290 @@
+{
+ "jobs": [
+  {
+   "jobOfferKey": "197db99b-f191-408a-9a33-676bd3f2f421",
+   "title": "PHP Developer / Laravel",
+   "division": "IT",
+   "category": "Developer",
+   "subCategory": "PHP",
+   "company": "Dev4Hire",
+   "companyLogoUrl": "https://cdn.solid.jobs/companies/logos/a26f78179bc74ccc9acb2075a2975ae6",
+   "salary": {
+    "from": 11800.0,
+    "to": 13400.0,
+    "currency": "PLN",
+    "period": "Month",
+    "employmentType": "B2B"
+   },
+   "contractTime": "full_time",
+   "locations": [
+    "Warszawa"
+   ],
+   "benefits": [],
+   "isRemote": true,
+   "isHybrid": false,
+   "url": "https://solid.jobs/o/rjz9q6zf/jobradar",
+   "experienceLevel": "Junior",
+   "skills": [
+    {
+     "level": "Advanced",
+     "name": "PHP"
+    },
+    {
+     "level": "Advanced",
+     "name": "Laravel"
+    },
+    {
+     "level": "Advanced",
+     "name": "Docker"
+    },
+    {
+     "level": "Advanced",
+     "name": "CI/CD"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "Symfony"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "REST"
+    }
+   ],
+   "languages": [
+    {
+     "level": "Expert",
+     "name": "Polski"
+    },
+    {
+     "level": "Advanced",
+     "name": "Angielski"
+    }
+   ],
+   "description": "<p>...</p>",
+   "validFrom": "2026-10-05T12:31:36.6577155+02:00",
+   "validTo": "2026-11-05T12:31:36.6577155+02:00",
+   "updatedAt": "2026-10-05T10:28:08.9533038+02:00"
+  },
+  {
+   "jobOfferKey": "82275339-68aa-4bf3-a591-51d6444be417",
+   "title": "Software QA Engineer",
+   "division": "IT",
+   "category": "Tester",
+   "subCategory": "ManualTester",
+   "company": "Renegades",
+   "companyLogoUrl": "https://cdn.solid.jobs/companies/logos/6def37c90b30635cca49811378acde394b764982630b4891e0849244397a8965.png",
+   "salary": {
+    "from": 11800.0,
+    "to": 13400.0,
+    "currency": "PLN",
+    "period": "Month",
+    "employmentType": "B2B"
+   },
+   "contractTime": "full_time",
+   "locations": [
+    "Gdańsk"
+   ],
+   "benefits": [],
+   "isRemote": true,
+   "isHybrid": false,
+   "url": "https://solid.jobs/o/s96t5f2h/jobradar",
+   "experienceLevel": "Regular",
+   "skills": [
+    {
+     "level": "Advanced",
+     "name": "QA"
+    }
+   ],
+   "languages": [
+    {
+     "level": "Expert",
+     "name": "Polski"
+    },
+    {
+     "level": "Advanced",
+     "name": "Angielski"
+    }
+   ],
+   "description": "<p>...</p>",
+   "validFrom": "2026-10-08T15:58:37.5889812+02:00",
+   "validTo": "2026-11-08T15:58:37.5889812+02:00",
+   "updatedAt": "2026-10-08T15:49:34.4062147+02:00"
+  },
+  {
+   "jobOfferKey": "2c730260-58b0-48d1-a71d-6aa2ba0ec61c",
+   "title": "System Analysis Trainee",
+   "division": "IT",
+   "category": "Analyst",
+   "subCategory": "Analyst",
+   "company": "Andersen Lab",
+   "companyLogoUrl": "https://cdn.solid.jobs/companies/logos/30c05dbc3fdf4f1eb4b152a75c343be0.png",
+   "salary": {
+    "from": 0.0,
+    "to": 4900.0,
+    "currency": "PLN",
+    "period": "Month",
+    "employmentType": "UoP"
+   },
+   "contractTime": "full_time",
+   "locations": [
+    "Warszawa"
+   ],
+   "benefits": [],
+   "isRemote": false,
+   "isHybrid": false,
+   "url": "https://solid.jobs/o/3diw3ymt/jobradar",
+   "experienceLevel": "Intern",
+   "skills": [
+    {
+     "level": "Basic",
+     "name": "System analysis"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "SQL"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "UML 2.0"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "API design"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "HTTP/HTTPS"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "REST"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "SOAP"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "Agile"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "Scrum"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "Kanban"
+    }
+   ],
+   "languages": [
+    {
+     "level": "Advanced",
+     "name": "Angielski"
+    }
+   ],
+   "description": "<p>...</p>",
+   "validFrom": "2026-09-21T14:43:45.6147482+02:00",
+   "validTo": "2026-10-22T14:43:45.6147482+02:00",
+   "updatedAt": "2026-09-21T13:41:07.8302179+02:00"
+  },
+  {
+   "jobOfferKey": "acb1c9ba-e2fe-4fb9-a830-851d2e2b2689",
+   "title": "Sales Assistant",
+   "division": "IT",
+   "category": "OtherIT",
+   "subCategory": "OtherIT",
+   "company": "TeamQuest",
+   "companyLogoUrl": "https://cdn.solid.jobs/companies/logos/55c1bdeef5500657f1a3ecb4a373ecc98c9ac59fd6d0c7b658f7e5d4fc3f15db.png",
+   "salary": {
+    "from": 4700.0,
+    "to": 6000.0,
+    "currency": "PLN",
+    "period": "Month",
+    "employmentType": "B2B"
+   },
+   "contractTime": "full_time",
+   "locations": [
+    "Warszawa"
+   ],
+   "benefits": [
+    "Szkolenia wewnętrzne",
+    "Kawa / Herbata"
+   ],
+   "isRemote": false,
+   "isHybrid": false,
+   "url": "https://solid.jobs/o/2tt7mbdz/jobradar",
+   "experienceLevel": "Junior",
+   "skills": [
+    {
+     "level": "NiceToHave",
+     "name": "Sales"
+    },
+    {
+     "level": "NiceToHave",
+     "name": "Branża IT"
+    }
+   ],
+   "languages": [
+    {
+     "level": "Expert",
+     "name": "Polski"
+    },
+    {
+     "level": "Advanced",
+     "name": "Angielski"
+    }
+   ],
+   "description": "<p>...</p>",
+   "validFrom": "2026-09-30T13:30:36.9889515+02:00",
+   "validTo": "2026-10-31T13:30:36.9889515+02:00",
+   "updatedAt": "2026-09-30T13:16:45.4095285+02:00"
+  },
+  {
+   "jobOfferKey": "1df6e03d-bf95-4c68-94f5-167a7baefc50",
+   "title": "Agent Call Center - j. Niderlandzki (K/M)",
+   "division": "Sales",
+   "category": "CustomerSuccess",
+   "subCategory": "CustomerSuccess",
+   "company": "Audit HR",
+   "companyLogoUrl": "https://cdn.solid.jobs/companies/logos/e85d844ae36647d6b9e8bb744398f0dc.webp",
+   "salary": {
+    "from": 8000.0,
+    "to": 11000.0,
+    "currency": "PLN",
+    "period": "Month",
+    "employmentType": "UoP"
+   },
+   "contractTime": "full_time",
+   "locations": [
+    "Gorzów Wielkopolski"
+   ],
+   "benefits": [
+    "Pakiet medyczny",
+    "Ubezpieczenie",
+    "Parking"
+   ],
+   "isRemote": true,
+   "isHybrid": false,
+   "url": "https://solid.jobs/o/ryyqpa2m/jobradar",
+   "experienceLevel": "Regular",
+   "skills": [
+    {
+     "level": "Expert",
+     "name": "Obsługa klienta"
+    }
+   ],
+   "languages": [
+    {
+     "level": "Advanced",
+     "name": "Niderlandzki"
+    }
+   ],
+   "description": "<p>...</p>",
+   "validFrom": "2026-10-08T15:17:25.1783781+02:00",
+   "validTo": "2026-11-08T15:17:25.1783781+02:00",
+   "updatedAt": "2026-10-08T15:05:43.1058819+02:00"
+  }
+ ],
+ "pageIndex": 0,
+ "pageSize": 500
+}

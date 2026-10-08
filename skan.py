@@ -36,7 +36,7 @@ def skanuj():
 
 
 def skanuj_i_zapisz(db):
-    """Skan + zapis do bazy. Zwraca (start, wyniki, nowe) — uzywa tez app.py."""
+    """Skan + zapis do bazy. Zwraca (start, wyniki, nowe)."""
     start = int(time.time())
     wyniki = skanuj()
     return start, wyniki, baza.zapisz_skan(db, wyniki, teraz=start)

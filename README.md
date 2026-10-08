@@ -7,7 +7,7 @@ Lokalny zamiennik **jobhunt.pl**, zawężony do tego, czego szukam:
 
 ```bash
 py app.py       # strona na http://localhost:8010 + skan co 30 min, dopóki działa
-py skan.py      # sam skan w terminalu (~7 s, ~500 ogłoszeń)
+py skan.py      # sam skan w terminalu (~30 s, ~550 ogłoszeń)
 ```
 
 Albo skrót **JobRadar** na Pulpicie (zamknięcie jego okna wyłącza radar).
@@ -33,6 +33,8 @@ zapytań zamiast tysięcy ofert. Lokalnie i tak dosiewamy staż/junior + Warszaw
 | Pracuj.pl (IT) | `it.pracuj.pl`, `__NEXT_DATA__` | `et=1,3,17` | ✅ | ✅ |
 | theprotocol.it | `__NEXT_DATA__` | `trainee,assistant,junior;p` | ✅ | — |
 | Bulldogjob | `__NEXT_DATA__` (+ strona oferty) | `experienceLevel,junior,intern` | ✅ | ✅ |
+| SolidJobs | `solid.jobs/public-api/offers` (feed dla agregatorów) | lokalnie, `experienceLevel` | ✅ | ✅ |
+| LinkedIn | `linkedin.com/jobs-guest` (HTML, bez logowania) | lokalnie, po tytule | dzień | — |
 
 Wynik trafia do bazy **`jobradar.db`** (SQLite, `baza.py`):
 
@@ -44,6 +46,14 @@ Wynik trafia do bazy **`jobradar.db`** (SQLite, `baza.py`):
   gdy portal nagle odda < połowy ofert, niczego nie wygaszamy).
 
 Bulldog nie podaje daty publikacji na liście — dociągamy ją ze strony każdej oferty.
+
+**SolidJobs** nie ma filtrów, ale feed jest posortowany od najnowszych — bierzemy
+pierwsze 500 ofert (~2 tygodnie) i odsiewamy dział IT + staż/junior.
+
+**LinkedIn** dokłada programy stażowe korporacji, których nie ma na portalach IT.
+Bez logowania ignoruje filtry poziomu, branży i „zdalnie”, więc bierzemy **tylko
+Warszawę z ostatniego tygodnia**, a poziom i „czy to IT” rozpoznajemy po tytule.
+Fraza „praktyki IT” łapie ~95% takich ofert; więcej zapytań grozi blokadą (HTTP 429).
 
 Każdy portal działa osobno — jak jeden zmieni stronę, reszta leci dalej, a skan
 pokaże `⚠ portal BŁĄD`. Wtedy: zapisz nową odpowiedź jako fixture w
@@ -60,7 +70,7 @@ jest opisany na górze `portale.py`.
 
 | Plik | Rola |
 |---|---|
-| `portale.py` | Portale (JustJoin, NoFluff, Pracuj, theprotocol, Bulldog) → wspólny format. |
+| `portale.py` | Portale (JustJoin, NoFluff, Pracuj, theprotocol, Bulldog, SolidJobs, LinkedIn) → wspólny format. |
 | `skan.py` | Skan wszystkich portali równolegle → baza. |
 | `baza.py` | SQLite: pamięć, scalanie duplikatów, wygasanie, moje decyzje. |
 | `app.py` | Serwer strony (stdlib `http.server`, tylko 127.0.0.1). |

@@ -2,9 +2,9 @@
 
 Uruchomienie:
     py app.py
-Otwiera sie http://localhost:8010 . Jesli ostatni skan jest starszy niz
-pol godziny, najpierw skanuje portale (~10 s), a potem co pol godziny
-w tle, dopoki okno jest otwarte.
+Otwiera sie http://localhost:8010 od razu. Jesli ostatni skan jest starszy
+niz pol godziny, w tle skanuje portale (~30 s, strona pokazuje "skanuje"
+i sama dociaga wynik), a potem co pol godziny, dopoki okno jest otwarte.
 
 Serwer to wbudowany http.server, slucha tylko na 127.0.0.1 (nikt z sieci
 sie nie dobije). Strona (strona.html) pobiera dane z /api/lista,
@@ -23,7 +23,7 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 import baza
-from skan import skanuj_i_zapisz
+import skan
 
 PORT = 8010
 STRONA = Path(__file__).parent / "strona.html"
@@ -32,21 +32,39 @@ SKAN_STARSZY_NIZ_S = 30 * 60
 # jedno polaczenie z baza na caly serwer + zamek, bo zadania ida z roznych watkow
 db = baza.polacz(check_same_thread=False)
 zamek = threading.Lock()
+# osobny zamek na skan: trwa ~30 s (LinkedIn), a lista ma sie w tym czasie
+# normalnie wczytywac — baze blokujemy tylko na sam zapis
+skanowanie = threading.Lock()
 
 
 def dane_listy():
     kiedy, bledy = baza.ostatni_skan(db)
     return {
         "oferty": baza.lista(db),
-        "skan": {"kiedy": kiedy, "bledy": bledy},
+        "skan": {"kiedy": kiedy, "bledy": bledy, "trwa": skanowanie.locked()},
     }
 
 
 def skanuj():
-    start, wyniki, nowe = skanuj_i_zapisz(db)
-    print(f"Skan: {sum(nowe.values())} nowych ofert")
-    return {"nowe": sum(nowe.values()),
-            "bledy": [f"{n}: {b}" for n, _, b, _ in wyniki if b]}
+    """Skanuje portale i zapisuje wynik. Gdy skan juz trwa — czeka na niego."""
+    if not skanowanie.acquire(blocking=False):
+        with skanowanie:
+            return {"nowe": 0, "bledy": []}
+    try:
+        start = int(time.time())
+        wyniki = skan.skanuj()
+        with zamek:
+            nowe = sum(baza.zapisz_skan(db, wyniki, teraz=start).values())
+    finally:
+        skanowanie.release()
+    print(time.strftime("%H:%M"), f"— skan: {nowe} nowych ofert")
+    return {"nowe": nowe, "bledy": [f"{n}: {b}" for n, _, b, _ in wyniki if b]}
+
+
+def skan_stary():
+    with zamek:
+        kiedy, _ = baza.ostatni_skan(db)
+    return not kiedy or time.time() - kiedy > SKAN_STARSZY_NIZ_S
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -75,6 +93,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             cialo = self._cialo()
+            if self.path == "/api/skan":
+                self._wyslij(skanuj())
+                return
             with zamek:
                 if self.path == "/api/status":
                     baza.ustaw_status(db, cialo["id"], cialo.get("status"))
@@ -82,8 +103,6 @@ class Handler(BaseHTTPRequestHandler):
                 elif self.path == "/api/przejrzane":
                     baza.zapisz_ustawienie(db, "przejrzane", int(time.time()))
                     self._wyslij({"ok": True})
-                elif self.path == "/api/skan":
-                    self._wyslij(skanuj())
                 else:
                     self._wyslij({"blad": "nie ma takiej strony"}, 404)
         except (KeyError, ValueError) as e:  # JSONDecodeError to tez ValueError
@@ -96,22 +115,17 @@ class Handler(BaseHTTPRequestHandler):
 def skanuj_co_jakis_czas():
     """Watek w tle: dopoki JobRadar dziala, skanuje, gdy ostatni skan sie zestarzeje."""
     while True:
-        with zamek:
-            kiedy, _ = baza.ostatni_skan(db)
-            if not kiedy or time.time() - kiedy > SKAN_STARSZY_NIZ_S:
-                print(time.strftime("%H:%M"), "— skanuję portale...")
-                try:
-                    skanuj()
-                except Exception as e:  # noqa: BLE001 — watek nie moze umrzec
-                    print("Skan nie wyszedł:", e)
+        if skan_stary():
+            print(time.strftime("%H:%M"), "— skanuję portale...")
+            try:
+                skanuj()
+            except Exception as e:  # noqa: BLE001 — watek nie moze umrzec
+                print("Skan nie wyszedł:", e)
         time.sleep(60)
 
 
 def main():
-    kiedy, _ = baza.ostatni_skan(db)
-    if not kiedy or time.time() - kiedy > SKAN_STARSZY_NIZ_S:
-        print("Ostatni skan jest stary — skanuję portale...")
-        skanuj()
+    # pierwszy skan (jesli trzeba) robi od razu watek w tle — strona nie czeka
     threading.Thread(target=skanuj_co_jakis_czas, daemon=True).start()
     adres = f"http://localhost:{PORT}"
     print(f"\nJobRadar działa: {adres}   (Ctrl+C, żeby zatrzymać)")
