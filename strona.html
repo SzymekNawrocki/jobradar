@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JobRadar</title>
+<style>
+  :root {
+    --tlo: #0d1117; --karta: #161b22; --ramka: #30363d; --tekst: #e6edf3;
+    --szary: #8b949e; --akcent: #58a6ff; --zielony: #3fb950; --zolty: #d29922;
+    --czerwony: #f85149; --chip: #1f2b3d;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --tlo: #f6f8fa; --karta: #ffffff; --ramka: #d0d7de; --tekst: #1f2328;
+      --szary: #656d76; --akcent: #0969da; --zielony: #1a7f37; --zolty: #9a6700;
+      --czerwony: #cf222e; --chip: #ddf4ff;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--tlo); color: var(--tekst); margin: 0;
+         font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 920px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  h1 { font-size: 20px; margin: 0; }
+  .zakres { color: var(--szary); }
+  .odstep { flex: 1; }
+  #skan-info { color: var(--szary); font-size: 12px; margin-bottom: 14px; }
+  #skan-info .blad { color: var(--czerwony); }
+
+  button, input[type=search] {
+    background: var(--karta); color: var(--tekst); border: 1px solid var(--ramka);
+    border-radius: 6px; padding: 7px 12px; font: inherit;
+  }
+  button { cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--akcent); }
+  button:disabled { opacity: .5; cursor: wait; }
+  button.wazny { border-color: var(--akcent); }
+
+  .zakladki { display: flex; gap: 4px; border-bottom: 1px solid var(--ramka); margin-bottom: 12px; }
+  .zakladki button { border: none; border-bottom: 2px solid transparent; border-radius: 0;
+                     background: none; color: var(--szary); padding: 8px 12px; }
+  .zakladki button.on { color: var(--tekst); border-bottom-color: var(--akcent); }
+
+  .filtry { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .filtry input[type=search] { flex: 1; min-width: 200px; }
+  .chip.on { border-color: var(--akcent); background: var(--chip); }
+  .etykieta { color: var(--szary); }
+  label.check { display: flex; align-items: center; gap: 6px; color: var(--szary); cursor: pointer; }
+  #licznik { color: var(--szary); font-size: 12px; margin-bottom: 4px; }
+
+  .oferta { background: var(--karta); border: 1px solid var(--ramka); border-radius: 8px;
+            padding: 12px 14px; margin: 8px 0; display: grid; gap: 6px;
+            grid-template-columns: 1fr auto; }
+  .oferta.nowa { border-left: 3px solid var(--zielony); }
+  .tytul { font-weight: 600; font-size: 15px; color: var(--tekst); text-decoration: none; }
+  .tytul:hover { color: var(--akcent); }
+  .nowe { color: var(--zielony); font-size: 11px; font-weight: 600; margin-right: 4px; }
+  .meta { color: var(--szary); font-size: 13px; }
+  .kasa { color: var(--zielony); }
+  .stack { display: flex; flex-wrap: wrap; gap: 4px; }
+  .stack span { background: var(--chip); border-radius: 4px; padding: 1px 6px; font-size: 12px; }
+  .portale { font-size: 12px; color: var(--szary); }
+  .portale a { color: var(--akcent); text-decoration: none; margin-right: 8px; }
+  .akcje { grid-column: 2; grid-row: 1 / span 4; display: flex; flex-direction: column; gap: 6px;
+           align-self: start; }
+  .akcje button { font-size: 12px; padding: 5px 10px; white-space: nowrap; }
+  .lewa { grid-column: 1; min-width: 0; }
+  #puste { color: var(--szary); padding: 30px 0; text-align: center; }
+
+  @media (max-width: 600px) {
+    .oferta { grid-template-columns: 1fr; }
+    .akcje { grid-column: 1; grid-row: auto; flex-direction: row; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>📡 JobRadar</h1>
+    <span class="zakres">staż / junior · Warszawa + zdalnie</span>
+    <span class="odstep"></span>
+    <button id="btn-skan" onclick="skanuj()">🔄 Skanuj teraz</button>
+    <button id="btn-przejrzane" onclick="przejrzane()">✓ Przejrzane</button>
+  </header>
+  <div id="skan-info">Ładuję…</div>
+
+  <nav class="zakladki">
+    <button data-zakladka="" class="on" onclick="zakladka(this)">Do przejrzenia</button>
+    <button data-zakladka="aplikowane" onclick="zakladka(this)">Zaaplikowane</button>
+    <button data-zakladka="ukryte" onclick="zakladka(this)">Ukryte</button>
+  </nav>
+
+  <div class="filtry">
+    <span class="etykieta">Opublikowane:</span>
+    <button class="chip swiezosc" data-dni="1" onclick="swiezosc(this)">dziś</button>
+    <button class="chip swiezosc" data-dni="3" onclick="swiezosc(this)">3 dni</button>
+    <button class="chip swiezosc on" data-dni="7" onclick="swiezosc(this)">tydzień</button>
+    <button class="chip swiezosc" data-dni="0" onclick="swiezosc(this)">wszystkie</button>
+  </div>
+
+  <div class="filtry">
+    <input type="search" id="szukaj" placeholder="Szukaj: tytuł, firma, technologia (np. „react python”)…"
+           oninput="rysuj()">
+    <button class="chip" data-tryb="zdalna" onclick="tryb(this)">zdalnie</button>
+    <button class="chip" data-tryb="hybrydowa" onclick="tryb(this)">hybrydowo</button>
+    <button class="chip" data-tryb="biuro" onclick="tryb(this)">biuro</button>
+    <label class="check"><input type="checkbox" id="tylko-nowe" onchange="rysuj()"> tylko 🆕</label>
+  </div>
+
+  <div id="licznik"></div>
+  <div id="lista"></div>
+  <div id="puste" hidden>Nic tu nie ma.</div>
+</main>
+
+<script>
+let OFERTY = [];
+let aktywnaZakladka = "";
+const tryby = new Set();
+let maksDni = 7;  // najwazniejszy filtr: swiezosc (0 = bez limitu)
+
+const PORTALE = { justjoin: "JustJoin", nofluff: "NoFluff", pracuj: "Pracuj",
+                  protocol: "theprotocol", bulldog: "Bulldog" };
+const TRYBY = { zdalna: "zdalnie", hybrydowa: "hybrydowo", biuro: "biuro" };
+
+async function wczytaj() {
+  const odp = await fetch("/api/lista");
+  const dane = await odp.json();
+  OFERTY = dane.oferty;
+  pokazSkan(dane.skan);
+  rysuj();
+}
+
+function pokazSkan(skan) {
+  const el = document.getElementById("skan-info");
+  if (!skan.kiedy) { el.textContent = "Jeszcze nie było skanu."; return; }
+  const kiedy = new Date(skan.kiedy * 1000).toLocaleString("pl-PL",
+    { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  el.innerHTML = `Ostatni skan: ${kiedy} · ${OFERTY.length} ogłoszeń` +
+    skan.bledy.map(b => ` · <span class="blad">⚠ ${esc(b)}</span>`).join("");
+}
+
+// "Młodszy" -> "mlodszy": szukanie bez polskich znakow i wielkosci liter
+function zwykly(s) {
+  return (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/ł/g, "l").replace(/Ł/g, "L").toLowerCase();
+}
+
+function pasuje(o, slowa) {
+  if ((o.status || "") !== aktywnaZakladka) return false;
+  // swiezosc liczona od PIERWSZEJ publikacji; oferty bez daty tylko w "wszystkie"
+  if (maksDni && (!o.data || dniTemu(o.data) >= maksDni)) return false;
+  if (document.getElementById("tylko-nowe").checked && !o.nowe) return false;
+  // oferty bez podanego trybu zostawiamy — nie wiadomo, czy nie pasuja
+  if (tryby.size && o.tryby.length && !o.tryby.some(t => tryby.has(t))) return false;
+  if (slowa.length) {
+    const tekst = zwykly([o.tytul, o.firma, o.kategoria, ...o.stack, ...o.miasta].join(" "));
+    if (!slowa.every(s => tekst.includes(s))) return false;
+  }
+  return true;
+}
+
+function rysuj() {
+  const slowa = zwykly(document.getElementById("szukaj").value).split(/\s+/).filter(Boolean);
+  const wynik = OFERTY.filter(o => pasuje(o, slowa));
+  document.getElementById("lista").innerHTML = wynik.map(karta).join("");
+  document.getElementById("puste").hidden = wynik.length > 0;
+
+  const ile = s => OFERTY.filter(o => (o.status || "") === s).length;
+  const nowych = OFERTY.filter(o => o.nowe && !o.status).length;
+  document.querySelectorAll(".zakladki button").forEach(b => {
+    const nazwy = { "": "Do przejrzenia", aplikowane: "Zaaplikowane", ukryte: "Ukryte" };
+    b.textContent = `${nazwy[b.dataset.zakladka]} (${ile(b.dataset.zakladka)})`;
+  });
+  document.getElementById("licznik").textContent =
+    `Pokazuję ${wynik.length}` + (nowych ? ` · 🆕 nowych: ${nowych}` : "");
+  const btn = document.getElementById("btn-przejrzane");
+  btn.classList.toggle("wazny", nowych > 0);
+}
+
+function karta(o) {
+  const akcje = o.status
+    ? `<button onclick="status('${o.id}', null)">↩ Cofnij</button>`
+    : `<button onclick="status('${o.id}', 'aplikowane')">✓ Zaaplikowałem</button>
+       <button onclick="status('${o.id}', 'ukryte')">✕ Ukryj</button>`;
+  const meta = [esc(o.firma), widelki(o), miejsce(o), wiek(o.data)].filter(Boolean).join(" · ");
+  return `
+  <article class="oferta${o.nowe && !o.status ? " nowa" : ""}">
+    <div class="lewa">
+      ${o.nowe && !o.status ? '<span class="nowe">🆕 NOWE</span>' : ""}
+      <a class="tytul" href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.tytul)}</a>
+    </div>
+    <div class="lewa meta">${meta}</div>
+    ${o.stack.length ? `<div class="lewa stack">${o.stack.slice(0, 8).map(s => `<span>${esc(s)}</span>`).join("")}</div>` : ""}
+    <div class="lewa portale">${o.linki.map(l =>
+      `<a href="${esc(l.url)}" target="_blank" rel="noopener">${PORTALE[l.portal] || l.portal} ↗</a>`).join("")}</div>
+    <div class="akcje">${akcje}</div>
+  </article>`;
+}
+
+function widelki(o) {
+  if (!o.wid_od && !o.wid_do) return "";
+  const k = x => x ? `${Math.round(x / 1000)}k` : "?";
+  const tekst = o.wid_od === o.wid_do || !o.wid_od ? k(o.wid_do || o.wid_od) : `${k(o.wid_od)}–${k(o.wid_do)}`;
+  return `<span class="kasa">${tekst} zł</span>`;
+}
+
+function miejsce(o) {
+  const czesci = [];
+  const waw = o.miasta.find(m => /^(warszawa|warsaw)$/i.test(m));
+  if (waw) czesci.push("Warszawa");
+  else if (o.miasta.length) czesci.push(esc(o.miasta[0]));
+  const t = o.tryby.map(t => TRYBY[t]).filter(Boolean).join("/");
+  if (t) czesci.push(t);
+  return czesci.join(", ");
+}
+
+// pelne doby od publikacji: "dzis" = ostatnie 24 h
+function dniTemu(ts) {
+  return Math.floor((Date.now() / 1000 - ts) / 86400);
+}
+
+function wiek(ts) {
+  if (!ts) return "data publikacji nieznana";
+  const dni = dniTemu(ts);
+  if (dni <= 0) return "opublikowana dziś";
+  if (dni === 1) return "opublikowana wczoraj";
+  return `opublikowana ${dni} dni temu`;
+}
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g,
+    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function zakladka(btn) {
+  aktywnaZakladka = btn.dataset.zakladka;
+  document.querySelectorAll(".zakladki button").forEach(b => b.classList.toggle("on", b === btn));
+  rysuj();
+}
+
+function swiezosc(btn) {
+  maksDni = Number(btn.dataset.dni);
+  document.querySelectorAll(".swiezosc").forEach(b => b.classList.toggle("on", b === btn));
+  rysuj();
+}
+
+function tryb(btn) {
+  const t = btn.dataset.tryb;
+  tryby.has(t) ? tryby.delete(t) : tryby.add(t);
+  btn.classList.toggle("on", tryby.has(t));
+  rysuj();
+}
+
+async function wyslij(sciezka, cialo) {
+  const odp = await fetch(sciezka, { method: "POST", body: JSON.stringify(cialo || {}) });
+  if (!odp.ok) throw new Error((await odp.json()).blad || odp.statusText);
+  return odp.json();
+}
+
+async function status(id, nowy) {
+  const o = OFERTY.find(x => x.id === id);
+  const stary = o.status;
+  o.status = nowy;  // od razu na ekranie, zapis w tle
+  rysuj();
+  try { await wyslij("/api/status", { id, status: nowy }); }
+  catch (e) { o.status = stary; rysuj(); console.error(e); }
+}
+
+async function przejrzane() {
+  await wyslij("/api/przejrzane");
+  OFERTY.forEach(o => o.nowe = false);
+  rysuj();
+}
+
+async function skanuj() {
+  const btn = document.getElementById("btn-skan");
+  btn.disabled = true;
+  btn.textContent = "Skanuję…";
+  try {
+    const wynik = await wyslij("/api/skan");
+    btn.textContent = `🔄 Skanuj teraz (+${wynik.nowe})`;
+    await wczytaj();
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+wczytaj();
+// serwer skanuje sam co 30 min — strona dociaga wynik co 5 min (filtry zostaja)
+setInterval(wczytaj, 5 * 60 * 1000);
+</script>
+</body>
+</html>

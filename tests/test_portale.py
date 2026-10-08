@@ -59,6 +59,11 @@ class JustJoin(unittest.TestCase):
         self.assertEqual(len(o["miasta"]), 5)
         self.assertEqual(o["tryby"], ["zdalna"])
 
+    def test_data_to_pierwsza_publikacja_nie_odswiezenie(self):
+        # publishedAt = 2026-10-08 (bump), lastPublishedAt = 2026-09-18 (prawdziwa)
+        o = po_tytule(self.oferty, "Junior Site Reliability")
+        self.assertEqual(o["data"], portale._ts("2026-09-18T13:19:39.412237Z"))
+
     def test_daty(self):
         o = po_tytule(self.oferty, "Junior Site Reliability")
         self.assertEqual(o["poziomy"], ["junior"])
@@ -105,6 +110,11 @@ class Pracuj(unittest.TestCase):
         self.assertIn("Warszawa", o["miasta"])
         self.assertIn("warszawa", o["url"])
 
+    def test_data_to_initial_publicated(self):
+        # odswiezona 2026-10-08, ale wisi od 2026-09-23
+        o = po_tytule(self.oferty, "Solution Architect Intern")
+        self.assertEqual(o["data"], portale._ts("2026-09-23T14:30:47.987Z"))
+
     def test_kilka_poziomow(self):
         self.assertEqual(po_tytule(self.oferty, "Tester manualny")["poziomy"], ["junior", "mid"])
 
@@ -136,9 +146,14 @@ class Bulldog(unittest.TestCase):
         o = po_tytule(self.oferty, "Senior Test Analyst")
         self.assertEqual((o["wid_od"], o["wid_do"]), (12000, 16000))
 
-    def test_bez_daty_publikacji(self):
-        # Bulldog jej nie podaje — w kroku 2 zastapi ja "pierwszy raz widziana"
+    def test_lista_bez_daty_publikacji(self):
+        # lista jej nie podaje — dociagamy ze strony oferty (nizej)
         self.assertTrue(all(o["data"] == 0 for o in self.oferty))
+
+    def test_daty_ze_strony_oferty(self):
+        data, wygasa = portale.parsuj_bulldog_szczegoly(wczytaj("bulldog_oferta"))
+        self.assertEqual(data, portale._ts("2026-10-08T08:20:27+02:00"))
+        self.assertEqual(wygasa, portale._ts("2026-11-07T23:59:59+01:00"))
 
     def test_miasta_z_listy_po_przecinku(self):
         self.assertIn("Warszawa", po_tytule(self.oferty, "Fullstack Mobile")["miasta"])
@@ -149,10 +164,18 @@ class Normalizacja(unittest.TestCase):
         o = portale._oferta(wid_od=21840, wid_do=3276000)
         self.assertEqual((o["wid_od"], o["wid_do"]), (21840, None))
 
-    def test_zakres_warszawa_albo_zdalna(self):
-        self.assertTrue(portale._w_zakresie(portale._oferta(miasta=["Warsaw"])))
-        self.assertTrue(portale._w_zakresie(portale._oferta(miasta=["Kraków"], tryby=["zdalna"])))
-        self.assertFalse(portale._w_zakresie(portale._oferta(miasta=["Kraków"], tryby=["hybrydowa"])))
+    def test_dla_mnie_warszawa_albo_zdalna(self):
+        dla_mnie = lambda **p: portale._dla_mnie(portale._oferta(poziomy=["junior"], **p))
+        self.assertTrue(dla_mnie(miasta=["Warsaw"]))
+        self.assertTrue(dla_mnie(miasta=["Kraków"], tryby=["zdalna"]))
+        self.assertFalse(dla_mnie(miasta=["Kraków"], tryby=["hybrydowa"]))
+
+    def test_dla_mnie_tylko_staz_i_junior(self):
+        dla_mnie = lambda poziomy: portale._dla_mnie(portale._oferta(poziomy=poziomy, miasta=["Warszawa"]))
+        self.assertTrue(dla_mnie(["staz"]))
+        self.assertTrue(dla_mnie(["junior", "mid"]))  # "junior/mid" tez jest dla Ciebie
+        self.assertFalse(dla_mnie(["mid"]))
+        self.assertFalse(dla_mnie(["senior"]))
 
     def test_justjoin_7_cyfr_ulamka(self):
         self.assertGreater(portale._ts("2026-10-08T14:20:01.8875973Z"), 0)

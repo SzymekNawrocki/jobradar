@@ -1,41 +1,45 @@
-"""Skan portali IT — krok 1 (zamiennik jobhunt.pl).
+"""Skan portali IT -> baza jobradar.db. Tylko staz/junior, Warszawa albo zdalnie.
 
 Uruchomienie:
-    py skan.py            pelny skan (wszystkie strony, ~2-3 min)
-    py skan.py --szybki   tylko najnowsze strony kazdego portalu (~20 s)
+    py skan.py
 
 Portale leca rownolegle, kazdy osobno: jak jeden padnie (zmienil strone,
-timeout), reszta dziala, a w raporcie widac, ktory. Wynik laduje w
-oferty.json — w kroku 2 zastapi go baza SQLite.
+timeout), reszta dziala, a w raporcie widac, ktory. Wynik trafia do bazy
+(baza.py): nowe oferty sa zapamietywane, duplikaty miedzy portalami
+scalane, oferty zdjete z portali wygaszane.
 """
 
 import json
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
+import baza
 from portale import PORTALE
 
-PLIK = Path(__file__).parent / "oferty.json"
-STRONY_SZYBKI = 2
 
-
-def skanuj_portal(nazwa, maks_stron):
+def skanuj_portal(nazwa):
     """Zwraca (nazwa, oferty, blad, sekundy) — nigdy nie rzuca wyjatkiem."""
     start = time.time()
     try:
-        return nazwa, PORTALE[nazwa](maks_stron), None, time.time() - start
+        return nazwa, PORTALE[nazwa](), None, time.time() - start
     except Exception as e:  # noqa: BLE001 — jeden portal nie moze ubic skanu
         return nazwa, [], f"{type(e).__name__}: {e}", time.time() - start
 
 
-def skanuj(maks_stron=None):
+def skanuj():
     with ThreadPoolExecutor(max_workers=len(PORTALE)) as pula:
-        return list(pula.map(lambda n: skanuj_portal(n, maks_stron), PORTALE))
+        return list(pula.map(skanuj_portal, PORTALE))
+
+
+def skanuj_i_zapisz(db):
+    """Skan + zapis do bazy. Zwraca (start, wyniki, nowe) — uzywa tez app.py."""
+    start = int(time.time())
+    wyniki = skanuj()
+    return start, wyniki, baza.zapisz_skan(db, wyniki, teraz=start)
 
 
 def _widelki(o):
@@ -46,28 +50,30 @@ def _widelki(o):
 
 
 def main():
-    szybki = "--szybki" in sys.argv
-    print(f"Skanuję portale ({'szybko: najnowsze strony' if szybki else 'pełny skan'})...\n")
-    wyniki = skanuj(STRONY_SZYBKI if szybki else None)
+    print("Skanuję portale (staż/junior, Warszawa + zdalne)...\n")
+    db = baza.polacz()
+    start, wyniki, nowe = skanuj_i_zapisz(db)
 
-    wszystkie = []
     for nazwa, oferty, blad, sek in wyniki:
         if blad:
             print(f"  ⚠ {nazwa:<9} BŁĄD po {sek:.0f}s — {blad}")
         else:
-            print(f"  ✓ {nazwa:<9} {len(oferty):>5} ofert  ({sek:.0f}s)")
-        wszystkie.extend(oferty)
+            print(f"  ✓ {nazwa:<9} {len(oferty):>4} ofert, {nowe[nazwa]:>4} nowych  ({sek:.0f}s)")
 
-    wszystkie.sort(key=lambda o: o["data"], reverse=True)
-    PLIK.write_text(json.dumps(wszystkie, ensure_ascii=False), encoding="utf-8")
-    print(f"\nRazem: {len(wszystkie)} ofert (Warszawa + zdalne) → {PLIK.name}")
+    s = baza.statystyki(db)
+    print(f"\nW bazie: {s['ogloszen']} ogłoszeń po scaleniu "
+          f"({s['ofert_aktywnych']} ofert, {s['na_wielu_portalach']} na kilku portalach, "
+          f"{s['ofert_wygaslych']} wygasłych)")
 
-    # podglad: najswiezsze juniorskie, zeby od razu bylo widac, ze dziala
-    mlode = [o for o in wszystkie if {"staz", "junior"} & set(o["poziomy"])]
-    print(f"\nNajświeższe junior/staż ({len(mlode)} łącznie):")
-    for o in mlode[:12]:
-        print(f"  [{o['portal']}] {o['tytul']} — {o['firma']}{_widelki(o)}")
+    swieze = db.execute("SELECT * FROM ogloszenia WHERE pierwszy_raz = ? "
+                        "ORDER BY data DESC LIMIT 15", (start,)).fetchall()
+    print("\nNowe od ostatniego skanu (pokazuję do 15):")
+    for o in swieze:
+        portale = ", ".join(json.loads(o["portale"]))
+        print(f"  {o['tytul']} — {o['firma']}{_widelki(o)}  [{portale}]")
         print(f"      {o['url']}")
+    if not swieze:
+        print("  (brak)")
 
 
 if __name__ == "__main__":

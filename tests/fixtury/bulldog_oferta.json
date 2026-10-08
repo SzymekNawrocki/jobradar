@@ -1,0 +1,14 @@
+{
+ "props": {
+  "pageProps": {
+   "data": {
+    "job": {
+     "id": "257606-junior-rekruter-warszawa-teamquest",
+     "position": "Junior Rekruter",
+     "publishedAt": "2026-10-08T08:20:27+02:00",
+     "endsAt": "2026-11-07T23:59:59+01:00"
+    }
+   }
+  }
+ }
+}

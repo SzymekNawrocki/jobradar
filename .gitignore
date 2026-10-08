@@ -1,6 +1,5 @@
-# generowane przez radar.py — nie wersjonujemy
-seen.json
-oferty.html
+# generowane — nie wersjonujemy
+jobradar.db
 
 # notatki robocze (markdown) — tylko README trafia do repo
 *.md
@@ -10,4 +9,3 @@ oferty.html
 # Python
 __pycache__/
 *.pyc
-oferty.json

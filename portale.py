@@ -1,13 +1,15 @@
 """Pobieranie ofert z portali IT (to, co robil jobhunt.pl).
 
-Zakres: Warszawa + oferty zdalne. Kazdy portal ma dwie funkcje:
+Zakres: TYLKO entry level (staz / junior) w Warszawie albo zdalnie.
+Poziom filtruje sam portal (parametr w URL/API), wiec sciagamy kilkaset
+ofert zamiast kilkunastu tysiecy — caly skan to kilkanascie zapytan.
+Lokalnie i tak dosiewamy (_dla_mnie), bo "junior" na portalu potrafi
+zlapac oferty "mid/senior" z dopiskiem junior w innym polu.
 
-    parsuj_<portal>(dane)  -> lista ofert   (czysta, bez sieci — testowana)
-    pobierz_<portal>(maks_stron) -> lista   (siec + paginacja)
+Kazdy portal ma dwie funkcje:
 
-maks_stron=None to pelny skan (wszystkie strony), liczba = tylko tyle
-najnowszych stron (szybki skan). Kazdy portal sortujemy od najnowszych,
-wiec pierwsze strony to zawsze swieze oferty.
+    parsuj_<portal>(dane) -> lista ofert   (czysta, bez sieci — testowana)
+    pobierz_<portal>()    -> lista         (siec + paginacja)
 
 Wspolny format oferty (rozszerza ten z providers.py):
 
@@ -17,7 +19,7 @@ Wspolny format oferty (rozszerza ten z providers.py):
       "tytul", "firma", "url",
       "miasta":   ["Warszawa", ...],
       "lokacja":  "Warszawa, Kraków" (to samo jako tekst),
-      "data":     unix ts publikacji (0 = portal nie podaje),
+      "data":     unix ts PIERWSZEJ publikacji, nie odswiezenia (0 = brak),
       "wygasa":   unix ts wygasniecia (0 = portal nie podaje),
       "poziomy":  podzbior ["staz", "junior", "mid", "senior", "lead"],
       "tryby":    podzbior ["zdalna", "hybrydowa", "biuro"] ([] = nie podano),
@@ -32,7 +34,11 @@ Zrodla danych (zweryfikowane 2026-10-08):
   nofluff   -> nofluffjobs.com/api/search/posting (POST, JSON, pageSize)
   pracuj    -> it.pracuj.pl, JSON wbudowany w strone (__NEXT_DATA__)
   protocol  -> theprotocol.it, __NEXT_DATA__
-  bulldog   -> bulldogjob.pl, __NEXT_DATA__ (bez daty publikacji!)
+  bulldog   -> bulldogjob.pl, __NEXT_DATA__ (data tylko na stronie oferty)
+
+Uwaga na daty: JustJoin i Pracuj podaja tez date ODSWIEZENIA (platny "bump"),
+przez ktora miesieczna oferta wyglada na dzisiejsza. Bierzemy zawsze pierwsza
+publikacje — liczy sie, jak dawno oferta naprawde wisi.
 """
 
 import gzip
@@ -41,6 +47,7 @@ import math
 import re
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -152,6 +159,11 @@ def _widelki(pary):
     return (min(od) if od else None), (max(do) if do else None)
 
 
+def _najwczesniej(*daty):
+    """Najwczesniejsza niezerowa data (0 = brak)."""
+    return min((d for d in daty if d), default=0)
+
+
 def _uniq(lista):
     """Usuwa duplikaty, zachowujac kolejnosc."""
     return list(dict.fromkeys(x for x in lista if x))
@@ -176,8 +188,10 @@ def _oferta(**pola):
     return o
 
 
-def _w_zakresie(o):
-    """Warszawa albo zdalnie — reszta Polski nas nie interesuje."""
+def _dla_mnie(o):
+    """Staz/junior w Warszawie albo zdalnie — reszta nas nie interesuje."""
+    if not {"staz", "junior"} & set(o["poziomy"]):
+        return False
     if "zdalna" in o["tryby"]:
         return True
     return any(m.lower() in ("warszawa", "warsaw") for m in o["miasta"])
@@ -188,7 +202,8 @@ def _w_zakresie(o):
 # --------------------------------------------------------------------------
 
 JJ_URL = ("https://justjoin.it/api/candidate-api/offers"
-          "?orderBy=descending&sortBy=publishedAt&from={od}&itemsCount={ile}")
+          "?orderBy=descending&sortBy=publishedAt&from={od}&itemsCount={ile}"
+          "&experienceLevels=junior&experienceLevels=intern")
 JJ_NA_STRONE = 1000
 
 JJ_TRYBY = {"remote": "zdalna", "hybrid": "hybrydowa", "office": "biuro"}
@@ -213,7 +228,9 @@ def parsuj_justjoin(dane):
             firma=j.get("companyName", ""),
             url=f"https://justjoin.it/job-offer/{j['slug']}",
             miasta=miasta,
-            data=_ts(j.get("publishedAt")),
+            # "publishedAt" to ODSWIEZENIE (platny bump — stara oferta wraca na gore
+            # jako "dzisiejsza"); prawdziwa pierwsza publikacja to wczesniejsza z dwoch
+            data=_najwczesniej(_ts(j.get("publishedAt")), _ts(j.get("lastPublishedAt"))),
             wygasa=_ts(j.get("expiredAt")),
             poziomy=_poziomy([j.get("experienceLevel")]),
             tryby=[JJ_TRYBY.get(j.get("workplaceType"), "")],
@@ -225,27 +242,21 @@ def parsuj_justjoin(dane):
     return oferty
 
 
-def pobierz_justjoin(maks_stron=None):
-    # Filtr miasta w API dziala, ale "zdalne" juz nie. Wiec: cala Warszawa
-    # + ogolny strumien od najnowszych (z niego bierzemy zdalne, _w_zakresie).
-    # API ma twardy limit 10 000 pozycji — kursor 10000 zwraca HTTP 400,
-    # dlatego konczymy na totalItems, a nie na "next".
-    wynik = {}
-    for filtr in ("&city=warszawa", ""):
-        od, strona = 0, 0
-        while True:
-            dane = json.loads(_pobierz(JJ_URL.format(od=od, ile=JJ_NA_STRONE) + filtr,
-                                       naglowki={"Accept": "application/json",
-                                                 "Referer": "https://justjoin.it/"}))
-            for o in parsuj_justjoin(dane):
-                wynik.setdefault(o["id"], o)
-            strona += 1
-            meta = dane.get("meta") or {}
-            od += JJ_NA_STRONE
-            if od >= (meta.get("totalItems") or 0) or (maks_stron and strona >= maks_stron):
-                break
-            time.sleep(PRZERWA_S)
-    return [o for o in wynik.values() if _w_zakresie(o)]
+def pobierz_justjoin():
+    # Filtr "zdalne" w API nie dziala, wiec bierzemy cala Polske (staz+junior
+    # to ~450 ofert, jedno zapytanie) i odsiewamy u siebie. Konczymy na
+    # totalItems, nie na "next" — kursor za koncem zwraca HTTP 400.
+    oferty, od = [], 0
+    while True:
+        dane = json.loads(_pobierz(JJ_URL.format(od=od, ile=JJ_NA_STRONE),
+                                   naglowki={"Accept": "application/json",
+                                             "Referer": "https://justjoin.it/"}))
+        oferty.extend(parsuj_justjoin(dane))
+        od += JJ_NA_STRONE
+        if od >= ((dane.get("meta") or {}).get("totalItems") or 0):
+            break
+        time.sleep(PRZERWA_S)
+    return [o for o in oferty if _dla_mnie(o)]
 
 
 # --------------------------------------------------------------------------
@@ -298,34 +309,35 @@ def parsuj_nofluff(dane):
     return oferty
 
 
-def pobierz_nofluff(maks_stron=None):
+def pobierz_nofluff():
     # API oddaje do ~2000 ofert na raz — Warszawa i zdalne to po jednym zapytaniu
-    ile = 2000 if maks_stron is None else 200
     wynik = {}
-    for kryteria in ({"city": ["warszawa"]}, {"city": ["remote"]}):
+    for miasto in ("warszawa", "remote"):
         strona = 1
         while True:
+            kryteria = {"city": [miasto], "seniority": ["trainee", "junior"]}
             body = json.dumps({"criteriaSearch": kryteria, "page": strona}).encode()
             dane = json.loads(_pobierz(
-                NF_URL.format(ile=ile, strona=strona), dane=body,
+                NF_URL.format(ile=2000, strona=strona), dane=body,
                 naglowki={"Content-Type": "application/infiniteSearch+json"}))
             for o in parsuj_nofluff(dane):
                 wynik.setdefault(o["id"], o)
-            if strona >= (dane.get("totalPages") or 1) or (maks_stron and strona >= maks_stron):
+            if strona >= (dane.get("totalPages") or 1):
                 break
             strona += 1
             time.sleep(PRZERWA_S)
         time.sleep(PRZERWA_S)
-    return list(wynik.values())
+    return [o for o in wynik.values() if _dla_mnie(o)]
 
 
 # --------------------------------------------------------------------------
 # Pracuj.pl (sekcja IT)
 # --------------------------------------------------------------------------
 
+# sc=0: od najnowszych; et=1,3,17: praktykant, asystent, junior
 PR_URLE = [
-    "https://it.pracuj.pl/praca/warszawa;wp?sc=0&pn={strona}",   # sc=0: od najnowszych
-    "https://it.pracuj.pl/praca?sc=0&wm=home-office&pn={strona}",  # zdalne, cala Polska
+    "https://it.pracuj.pl/praca/warszawa;wp?sc=0&et=1,3,17&pn={strona}",
+    "https://it.pracuj.pl/praca?sc=0&et=1,3,17&wm=home-office&pn={strona}",  # zdalne, cala Polska
 ]
 PR_TRYBY = {"praca zdalna": "zdalna", "praca hybrydowa": "hybrydowa",
             "praca stacjonarna": "biuro"}
@@ -373,7 +385,8 @@ def parsuj_pracuj(dane):
             firma=g.get("companyName", ""),
             url=url,
             miasta=miasta,
-            data=_ts(g.get("lastPublicated")),
+            # lastPublicated to odswiezenie — liczy sie pierwsza publikacja
+            data=_ts(g.get("initialPublicated") or g.get("lastPublicated")),
             wygasa=_ts(g.get("expirationDate")),
             poziomy=[p for p in KOLEJNOSC_POZIOMOW if p in poziomy],
             tryby=[PR_TRYBY.get(t.lower(), "") for t in g.get("workModes") or []],
@@ -389,7 +402,7 @@ def _pracuj_ile_stron(dane):
     return math.ceil((d.get("groupedOffersTotalCount") or 0) / 50) or 1
 
 
-def pobierz_pracuj(maks_stron=None):
+def pobierz_pracuj():
     wynik = {}
     for wzor in PR_URLE:
         strona, ostatnia = 1, 1
@@ -399,11 +412,11 @@ def pobierz_pracuj(maks_stron=None):
                 ostatnia = _pracuj_ile_stron(dane)
             for o in parsuj_pracuj(dane):
                 wynik.setdefault(o["id"], o)
-            if strona >= ostatnia or (maks_stron and strona >= maks_stron):
+            if strona >= ostatnia:
                 break
             strona += 1
             time.sleep(PRZERWA_S)
-    return [o for o in wynik.values() if _w_zakresie(o)]
+    return [o for o in wynik.values() if _dla_mnie(o)]
 
 
 # --------------------------------------------------------------------------
@@ -411,8 +424,8 @@ def pobierz_pracuj(maks_stron=None):
 # --------------------------------------------------------------------------
 
 TP_URLE = [
-    "https://theprotocol.it/filtry/warszawa;wp?pageNumber={strona}",
-    "https://theprotocol.it/filtry/zdalna;rw?pageNumber={strona}",
+    "https://theprotocol.it/filtry/trainee,assistant,junior;p/warszawa;wp?pageNumber={strona}",
+    "https://theprotocol.it/filtry/trainee,assistant,junior;p/zdalna;rw?pageNumber={strona}",
 ]
 TP_TRYBY = {"remote": "zdalna", "zdalna": "zdalna", "hybrid": "hybrydowa",
             "hybrydowa": "hybrydowa", "stacjonarna": "biuro", "full office": "biuro"}
@@ -449,7 +462,7 @@ def parsuj_protocol(dane):
     return oferty
 
 
-def pobierz_protocol(maks_stron=None):
+def pobierz_protocol():
     wynik = {}
     for wzor in TP_URLE:
         strona = 1
@@ -458,11 +471,11 @@ def pobierz_protocol(maks_stron=None):
             for o in parsuj_protocol(dane):
                 wynik.setdefault(o["id"], o)
             ostatnia = dane["props"]["pageProps"]["offersResponse"]["page"]["count"]
-            if strona >= ostatnia or (maks_stron and strona >= maks_stron):
+            if strona >= ostatnia:
                 break
             strona += 1
             time.sleep(PRZERWA_S)
-    return [o for o in wynik.values() if _w_zakresie(o)]
+    return [o for o in wynik.values() if _dla_mnie(o)]
 
 
 # --------------------------------------------------------------------------
@@ -470,8 +483,8 @@ def pobierz_protocol(maks_stron=None):
 # --------------------------------------------------------------------------
 
 BD_URLE = [
-    "https://bulldogjob.pl/companies/jobs/s/city,Warszawa/page,{strona}",
-    "https://bulldogjob.pl/companies/jobs/s/city,Remote/page,{strona}",
+    "https://bulldogjob.pl/companies/jobs/s/city,Warszawa/experienceLevel,junior,intern/page,{strona}",
+    "https://bulldogjob.pl/companies/jobs/s/city,Remote/experienceLevel,junior,intern/page,{strona}",
 ]
 BD_NA_STRONE = 50
 
@@ -515,7 +528,20 @@ def parsuj_bulldog(dane):
     return oferty
 
 
-def pobierz_bulldog(maks_stron=None):
+def parsuj_bulldog_szczegoly(dane):
+    """Strona pojedynczej oferty -> (publikacja, wygasa). Lista ich nie podaje."""
+    job = ((dane["props"]["pageProps"].get("data") or {}).get("job")) or {}
+    return _ts(job.get("publishedAt")), _ts(job.get("endsAt"))
+
+
+def _bulldog_daty(o):
+    try:
+        o["data"], o["wygasa"] = parsuj_bulldog_szczegoly(_next_data(_pobierz(o["url"])))
+    except Exception:
+        pass  # brak daty to nie powod, zeby zgubic oferte
+
+
+def pobierz_bulldog():
     wynik = {}
     for wzor in BD_URLE:
         strona = 1
@@ -524,11 +550,15 @@ def pobierz_bulldog(maks_stron=None):
             for o in parsuj_bulldog(dane):
                 wynik.setdefault(o["id"], o)
             ostatnia = math.ceil((dane["props"]["pageProps"].get("totalCount") or 0) / BD_NA_STRONE)
-            if strona >= ostatnia or (maks_stron and strona >= maks_stron):
+            if strona >= ostatnia:
                 break
             strona += 1
             time.sleep(PRZERWA_S)
-    return [o for o in wynik.values() if _w_zakresie(o)]
+    oferty = [o for o in wynik.values() if _dla_mnie(o)]
+    # daty publikacji sa tylko na stronach ofert — ~25 zapytan, 4 naraz
+    with ThreadPoolExecutor(max_workers=4) as pula:
+        list(pula.map(_bulldog_daty, oferty))
+    return oferty
 
 
 # nazwa portalu -> funkcja pobierajaca
