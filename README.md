@@ -1,8 +1,39 @@
 # JobRadar
 
-Radar **nowych** warszawskich ofert IT — ze stron karier firm, których agregatory
-(jobhunt.pl i spółka) nie mają.
+Lokalny zamiennik **jobhunt.pl** — świeże oferty IT (Warszawa + zdalne) z portali
+i ze stron karier firm, w jednym miejscu.
 
+## Skan portali (krok 1)
+
+```bash
+py skan.py            # pełny skan: wszystkie strony (~1,5 min, ~16 tys. ofert)
+py skan.py --szybki   # tylko najnowsze strony każdego portalu (~5 s)
+```
+
+Wynik: `oferty.json` (w kroku 2 zastąpi go baza SQLite).
+
+| Portal | Skąd bierzemy | Data publ. | Wygasa | Widełki |
+|---|---|---|---|---|
+| JustJoin.it | `justjoin.it/api/candidate-api/offers` (JSON) | ✅ | ✅ | ~50% |
+| NoFluffJobs | `nofluffjobs.com/api/search/posting` (POST, JSON) | ✅ | — | ~98% |
+| Pracuj.pl (IT) | `it.pracuj.pl`, JSON w stronie (`__NEXT_DATA__`) | ✅ | ✅ | ~45% |
+| theprotocol.it | `__NEXT_DATA__` | ✅ | — | ~45% |
+| Bulldogjob | `__NEXT_DATA__` | — | — | ~27% |
+
+Każdy portal działa osobno — jak jeden zmieni stronę, reszta leci dalej, a skan
+pokaże `⚠ portal BŁĄD`. Wtedy: zapisz nową odpowiedź jako fixture w
+`tests/fixtury/`, popraw `parsuj_<portal>` w `portale.py`, aż przejdą testy:
+
+```bash
+py -m unittest -v
+```
+
+Wspólny format oferty (poziomy, tryby pracy, umowy, widełki w PLN/mies., stack)
+jest opisany na górze `portale.py`.
+
+---
+
+## Radar stron karier firm (stara część)
 ## Po co to istnieje
 
 jobhunt.pl agreguje inne portale (Pracuj, LinkedIn, JustJoin...) i odświeża co ~godzinę.
@@ -30,6 +61,8 @@ i znacznikiem 🆕 przy nowościach.
 
 | Plik | Rola |
 |---|---|
+| `portale.py` | Portale (JustJoin, NoFluff, Pracuj, theprotocol, Bulldog) → wspólny format. |
+| `skan.py` | Skan wszystkich portali równolegle → `oferty.json`. |
 | `sources.py` | **Serce projektu** — lista firm (ATS + token + kategoria) i ustawienia filtrów. Tu dopisujesz nowe źródła. |
 | `providers.py` | Łączy się z Greenhouse / Lever / SmartRecruiters i sprowadza różne formaty do jednego. |
 | `radar.py` | Zbiera wszystko, filtruje (lokalizacja, wiek, poziom), wykrywa nowości, sortuje, drukuje + HTML. |

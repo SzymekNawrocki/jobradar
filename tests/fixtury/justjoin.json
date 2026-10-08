@@ -1,0 +1,439 @@
+{
+ "meta": {
+  "from": 0,
+  "totalItems": 5890,
+  "prev": {
+   "cursor": null,
+   "itemsCount": 500
+  },
+  "next": {
+   "cursor": 500,
+   "itemsCount": 500
+  }
+ },
+ "data": [
+  {
+   "guid": "5868964b-d623-4533-809d-38bece3a5d6a",
+   "slug": "rits-business-analyst-middle--warszawa-analytics",
+   "title": "Business Analyst (middle)",
+   "workplaceType": "hybrid",
+   "workingTime": "b2b_contract",
+   "experienceLevel": "mid",
+   "category": {
+    "key": "analytics",
+    "parentKey": null
+   },
+   "city": "Warszawa",
+   "street": "Warszawa",
+   "latitude": 52.2296756,
+   "longitude": 21.0122287,
+   "isRemoteInterview": false,
+   "companyName": "RITS",
+   "companyLogoThumbUrl": "https://imgproxy.justjoinit.tech/NSBbp1MwpsBbm-L03BrhPnD5iLeChw0IjL7p1tpu7Zg/h:200/w:200/plain/https://public.rocketjobs.pl/companies/logos/original/6aac78268ac1cfcb803e6612dc17b28065cff561.jpg",
+   "publishedAt": "2026-10-08T14:06:59.205163Z",
+   "isOpenToHireUkrainians": false,
+   "locations": [
+    {
+     "city": "Warszawa",
+     "street": "Warszawa",
+     "latitude": 52.2296756,
+     "longitude": 21.0122287,
+     "slug": "rits-business-analyst-middle--warszawa-analytics"
+    }
+   ],
+   "employmentTypes": [
+    {
+     "from": 15120.0,
+     "fromPerUnit": 90.0,
+     "to": 16800.0,
+     "toPerUnit": 100.0,
+     "currency": "PLN",
+     "currencySource": "original",
+     "type": "b2b",
+     "unit": "Hour",
+     "gross": false
+    },
+    {
+     "from": 3866.0,
+     "fromPerUnit": 23.01142900974147,
+     "to": 4295.0,
+     "toPerUnit": 25.5682544552683,
+     "currency": "USD",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "Hour",
+     "gross": false
+    },
+    {
+     "from": 3452.0,
+     "fromPerUnit": 20.5493526953901,
+     "to": 3836.0,
+     "toPerUnit": 22.832614105989,
+     "currency": "EUR",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "Hour",
+     "gross": false
+    },
+    {
+     "from": 3221.0,
+     "fromPerUnit": 19.17259596949428,
+     "to": 3579.0,
+     "toPerUnit": 21.3028844105492,
+     "currency": "CHF",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "Hour",
+     "gross": false
+    },
+    {
+     "from": 2920.0,
+     "fromPerUnit": 17.37955006275951,
+     "to": 3244.0,
+     "toPerUnit": 19.3106111808439,
+     "currency": "GBP",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "Hour",
+     "gross": false
+    }
+   ],
+   "requiredSkills": [
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Business Analysis",
+     "level": 3,
+     "group": null
+    }
+   ],
+   "niceToHaveSkills": [],
+   "languages": [],
+   "isPromoted": false,
+   "isSuperOffer": false,
+   "applyMethod": "external",
+   "applyUrl": "https://rits.traffit.com/public/form/a/1086e0bd73321130f5c7fa2d819586ec726d4f7745513d3d",
+   "lastPublishedAt": "2026-10-08T14:06:59.205163Z",
+   "expiredAt": "2026-10-23T21:59:59.9999999Z",
+   "companyProfileSlug": null,
+   "hybridWorkSchedule": null
+  },
+  {
+   "guid": "6ac18b03-374f-43bb-ba0a-75111f7f1d33",
+   "slug": "tameshi-cloud-support-lead-warszawa-devops",
+   "title": "Cloud Support Lead",
+   "workplaceType": "remote",
+   "workingTime": "full_time",
+   "experienceLevel": "senior",
+   "category": {
+    "key": "devops",
+    "parentKey": null
+   },
+   "city": "Warszawa",
+   "street": "Warszawa",
+   "latitude": 52.2296756,
+   "longitude": 21.0122287,
+   "isRemoteInterview": false,
+   "companyName": "Tameshi",
+   "companyLogoThumbUrl": "https://imgproxy.justjoinit.tech/7XJ4z1LZXGneFOFajCzjL6G8Rvo1sVBoYyQn7g6pUUA/h:200/w:200/plain/https://public.justjoin.it/companies/logos/original/b5007c56e55712e51b4e015792996cdb392024ca.png",
+   "publishedAt": "2026-10-08T14:30:17.276863Z",
+   "isOpenToHireUkrainians": false,
+   "locations": [
+    {
+     "city": "Łódź",
+     "street": "Łódź",
+     "latitude": 51.7592924,
+     "longitude": 19.4558778,
+     "slug": "tameshi-cloud-support-lead-lodz-devops"
+    },
+    {
+     "city": "Kraków",
+     "street": "Kraków",
+     "latitude": 50.06465009999999,
+     "longitude": 19.9449799,
+     "slug": "tameshi-cloud-support-lead-krakow-devops"
+    },
+    {
+     "city": "Warszawa",
+     "street": "Warszawa",
+     "latitude": 52.2296756,
+     "longitude": 21.0122287,
+     "slug": "tameshi-cloud-support-lead-warszawa-devops"
+    },
+    {
+     "city": "Poznań",
+     "street": "Poznań",
+     "latitude": 52.40567859999999,
+     "longitude": 16.9312766,
+     "slug": "tameshi-cloud-support-lead-poznan-devops"
+    },
+    {
+     "city": "Wrocław",
+     "street": "Wrocław",
+     "latitude": 51.10929480000001,
+     "longitude": 17.0386019,
+     "slug": "tameshi-cloud-support-lead-wroclaw-devops"
+    }
+   ],
+   "employmentTypes": [
+    {
+     "from": 18000.0,
+     "fromPerUnit": 18000.0,
+     "to": 25000.0,
+     "toPerUnit": 25000.0,
+     "currency": "PLN",
+     "currencySource": "original",
+     "type": "b2b",
+     "unit": "Month",
+     "gross": false
+    },
+    {
+     "from": 4602.0,
+     "fromPerUnit": 4602.285801948294,
+     "to": 6392.0,
+     "toPerUnit": 6392.063613817075,
+     "currency": "USD",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "Month",
+     "gross": false
+    },
+    {
+     "from": 4110.0,
+     "fromPerUnit": 4109.87053907802,
+     "to": 5708.0,
+     "toPerUnit": 5708.15352649725,
+     "currency": "EUR",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "Month",
+     "gross": false
+    },
+    {
+     "from": 3835.0,
+     "fromPerUnit": 3834.519193898856,
+     "to": 5326.0,
+     "toPerUnit": 5325.7211026373,
+     "currency": "CHF",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "Month",
+     "gross": false
+    },
+    {
+     "from": 3476.0,
+     "fromPerUnit": 3475.910012551902,
+     "to": 4828.0,
+     "toPerUnit": 4827.652795210975,
+     "currency": "GBP",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "Month",
+     "gross": false
+    }
+   ],
+   "requiredSkills": [
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "AWS",
+     "level": 3,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Kubernetes",
+     "level": 3,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Docker",
+     "level": 3,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Terraform",
+     "level": 3,
+     "group": null
+    }
+   ],
+   "niceToHaveSkills": [],
+   "languages": [
+    {
+     "code": "pl",
+     "level": "C2"
+    },
+    {
+     "code": "en",
+     "level": "B2"
+    }
+   ],
+   "isPromoted": false,
+   "isSuperOffer": false,
+   "applyMethod": "external",
+   "applyUrl": "https://tameshi.peopleforce.io/careers/v/244135-cloud-support-lead",
+   "lastPublishedAt": "2026-10-08T14:30:17.276863Z",
+   "expiredAt": "2026-11-30T22:59:59.9999999Z",
+   "companyProfileSlug": "tameshi",
+   "hybridWorkSchedule": null
+  },
+  {
+   "guid": "b65cb554-05c9-4809-9f60-bc6464d19b46",
+   "slug": "moon-active-junior-site-reliability-engineer-warszawa-other-645669a7",
+   "title": "Junior Site Reliability Engineer",
+   "workplaceType": "hybrid",
+   "workingTime": "full_time",
+   "experienceLevel": "junior",
+   "category": {
+    "key": "other",
+    "parentKey": null
+   },
+   "city": "Warszawa",
+   "street": "Królewska 16",
+   "latitude": 52.2381447,
+   "longitude": 21.0045822,
+   "isRemoteInterview": false,
+   "companyName": "Moon Active",
+   "companyLogoThumbUrl": "https://imgproxy.justjoinit.tech/IoptpNqWOV4mZuA7qVj0IPC2Tg5lrfykRtO4fWfQyDQ/h:200/w:200/plain/https://s3.eu-west-1.amazonaws.com/public.justjoin.com/justjoinit/hiring-company-logos/01a01dd8-887a-70ef-a3d2-fc053c29de37.jpg",
+   "publishedAt": "2026-10-08T14:05:07.2916022Z",
+   "isOpenToHireUkrainians": false,
+   "locations": [
+    {
+     "city": "Warszawa",
+     "street": "Królewska 16",
+     "latitude": 52.2381447,
+     "longitude": 21.0045822,
+     "slug": "moon-active-junior-site-reliability-engineer-warszawa-other-645669a7"
+    }
+   ],
+   "employmentTypes": [
+    {
+     "from": null,
+     "fromPerUnit": null,
+     "to": null,
+     "toPerUnit": null,
+     "currency": "GBP",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "month",
+     "gross": false
+    },
+    {
+     "from": null,
+     "fromPerUnit": null,
+     "to": null,
+     "toPerUnit": null,
+     "currency": "EUR",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "month",
+     "gross": false
+    },
+    {
+     "from": null,
+     "fromPerUnit": null,
+     "to": null,
+     "toPerUnit": null,
+     "currency": "USD",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "month",
+     "gross": false
+    },
+    {
+     "from": null,
+     "fromPerUnit": null,
+     "to": null,
+     "toPerUnit": null,
+     "currency": "CHF",
+     "currencySource": "conversion",
+     "type": "b2b",
+     "unit": "month",
+     "gross": false
+    },
+    {
+     "from": null,
+     "fromPerUnit": null,
+     "to": null,
+     "toPerUnit": null,
+     "currency": "PLN",
+     "currencySource": "original",
+     "type": "b2b",
+     "unit": "month",
+     "gross": false
+    }
+   ],
+   "requiredSkills": [
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Bash",
+     "level": 2,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Cloud Computing",
+     "level": 2,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Troubleshooting",
+     "level": 2,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Monitoring systems",
+     "level": 2,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Linux",
+     "level": 2,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Containers",
+     "level": 2,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Scripting",
+     "level": 2,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Monitoring Tools",
+     "level": 2,
+     "group": null
+    },
+    {
+     "skillId": "00000000-0000-0000-0000-000000000000",
+     "name": "Python",
+     "level": 2,
+     "group": null
+    }
+   ],
+   "niceToHaveSkills": [],
+   "languages": [
+    {
+     "code": "en",
+     "level": "B2"
+    }
+   ],
+   "isPromoted": false,
+   "isSuperOffer": false,
+   "applyMethod": "external",
+   "applyUrl": "https://jobs.ashbyhq.com/moonactive/e78f22a4-6067-48dc-8e09-a9ab7535451a?utm_source=GoBVgrq7xY",
+   "lastPublishedAt": "2026-09-18T13:19:39.412237Z",
+   "expiredAt": "2026-10-18T14:06:51.179904Z",
+   "companyProfileSlug": "moon-active",
+   "hybridWorkSchedule": null
+  }
+ ]
+}

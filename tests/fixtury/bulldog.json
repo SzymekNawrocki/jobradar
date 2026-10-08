@@ -1,0 +1,128 @@
+{
+ "props": {
+  "pageProps": {
+   "jobs": [
+    {
+     "__typename": "Job",
+     "id": "257621-senior-test-analyst-wroclaw-warszawa-devire",
+     "company": {
+      "__typename": "Company",
+      "name": "Devire",
+      "logo": {
+       "__typename": "Image",
+       "url": "https://cdn.bulldogjob.com/system/companies/logos/000/003/527/list/Devire_logotyp_kolor_rgb_web.jpg"
+      }
+     },
+     "denominatedSalaryLong": {
+      "__typename": "Salary",
+      "money": "12 000 - 16 000",
+      "currency": "PLN",
+      "hidden": false
+     },
+     "environment": {
+      "__typename": "Environment",
+      "remotePossible": null
+     },
+     "redirectTo": null,
+     "highlight": null,
+     "city": "Wrocław, Warszawa",
+     "experienceLevel": "senior",
+     "employmentType": "full_time",
+     "hiddenBrackets": false,
+     "matchingUserBrackets": false,
+     "position": "Senior Test Analyst",
+     "remote": true,
+     "showSalary": true,
+     "technologyTags": [
+      "Xray",
+      "API",
+      "SQL"
+     ],
+     "contractB2b": true,
+     "contractEmployment": false,
+     "contractOther": null,
+     "locale": "pl"
+    },
+    {
+     "__typename": "Job",
+     "id": "257618-fullstack-mobile-developer-kotlin-java-backend-bialystok-gdansk-katowice-krakow-lublin-poznan-rzeszow-warszawa-wroclaw-lodz-teamquest",
+     "company": {
+      "__typename": "Company",
+      "name": "TeamQuest",
+      "logo": {
+       "__typename": "Image",
+       "url": "https://cdn.bulldogjob.com/system/companies/logos/000/002/964/list/path3699.png"
+      }
+     },
+     "denominatedSalaryLong": {
+      "__typename": "Salary",
+      "money": "26 000 - 32 000",
+      "currency": "PLN",
+      "hidden": false
+     },
+     "environment": {
+      "__typename": "Environment",
+      "remotePossible": null
+     },
+     "redirectTo": null,
+     "highlight": null,
+     "city": "Białystok, Gdańsk, Katowice, Kraków, Lublin, Poznań, Rzeszów, Warszawa, Wrocław, Łódź",
+     "experienceLevel": "senior",
+     "employmentType": "full_time",
+     "hiddenBrackets": false,
+     "matchingUserBrackets": false,
+     "position": "Fullstack Mobile Developer ( Kotlin, Java Backend)",
+     "remote": true,
+     "showSalary": true,
+     "technologyTags": [
+      "Java",
+      "Spring Boot",
+      "Kotlin Multiplatform"
+     ],
+     "contractB2b": true,
+     "contractEmployment": null,
+     "contractOther": null,
+     "locale": "pl"
+    },
+    {
+     "__typename": "Job",
+     "id": "257606-junior-rekruter-warszawa-teamquest",
+     "company": {
+      "__typename": "Company",
+      "name": "TeamQuest",
+      "logo": {
+       "__typename": "Image",
+       "url": "https://cdn.bulldogjob.com/system/companies/logos/000/002/964/list/path3699.png"
+      }
+     },
+     "denominatedSalaryLong": {
+      "__typename": "Salary",
+      "money": "4 900 - 5 400",
+      "currency": "PLN",
+      "hidden": false
+     },
+     "environment": {
+      "__typename": "Environment",
+      "remotePossible": null
+     },
+     "redirectTo": null,
+     "highlight": null,
+     "city": "Warszawa",
+     "experienceLevel": "junior",
+     "employmentType": "full_time",
+     "hiddenBrackets": false,
+     "matchingUserBrackets": false,
+     "position": "Junior Rekruter",
+     "remote": false,
+     "showSalary": true,
+     "technologyTags": [],
+     "contractB2b": null,
+     "contractEmployment": null,
+     "contractOther": true,
+     "locale": "pl"
+    }
+   ],
+   "totalCount": 3
+  }
+ }
+}

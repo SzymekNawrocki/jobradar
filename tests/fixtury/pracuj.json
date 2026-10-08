@@ -1,0 +1,432 @@
+{
+ "props": {
+  "pageProps": {
+   "dehydratedState": {
+    "queries": [
+     {
+      "queryKey": [
+       "jobOffers"
+      ],
+      "state": {
+       "data": {
+        "groupedOffers": [
+         {
+          "technologies": [
+           "AxiomSL RegCloud",
+           "AxiomSL",
+           "ControllerView",
+           "SQL",
+           "ETL",
+           "CSV",
+           "XLM",
+           "TEST"
+          ],
+          "groupId": "d42b0000-56be-0050-8d87-08df23af0ede",
+          "jobTitle": "AxiomSL RegCloud Tester",
+          "companyName": "SQUARE ONE RESOURCES sp. z o.o.",
+          "companyProfileAbsoluteUri": "https://pracodawcy.pracuj.pl/company/20409928",
+          "companyId": 20409928,
+          "companyLogoUri": null,
+          "lastPublicated": "2026-10-08T14:26:00Z",
+          "initialPublicated": "2026-10-06T14:26:08.413Z",
+          "expirationDate": "2026-11-05T22:59:59Z",
+          "salaryDisplayText": "100–130 zł netto (+ VAT) / godz.",
+          "isSuperOffer": true,
+          "isFranchise": false,
+          "isOptionalCv": false,
+          "isOneClickApply": true,
+          "isJobiconCompany": false,
+          "isRemoteWorkAllowed": true,
+          "offers": [
+           {
+            "partitionId": 1005140991,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/axiomsl-regcloud-tester-warszawa,oferta,1005140991",
+            "displayWorkplace": "Warszawa",
+            "isWholePoland": false,
+            "appliedProducts": [],
+            "coordinates": null,
+            "distanceInKilometers": null
+           }
+          ],
+          "positionLevels": [
+           "Specjalista / Specjalistka (mid / Regular)"
+          ],
+          "typesOfContract": [
+           "Kontrakt B2B"
+          ],
+          "workSchedules": [],
+          "workModes": [
+           "Praca zdalna"
+          ],
+          "primaryAttributes": [
+           {
+            "code": "immediate-employment",
+            "label": {
+             "text": "Praca od zaraz",
+             "pracujPlText": "Praca od zaraz",
+             "primaryTargetSiteText": "Praca od zaraz"
+            },
+            "model": {
+             "modelType": "flag",
+             "flag": true
+            }
+           }
+          ],
+          "commonOfferId": null,
+          "searchEngineRelevancyScore": 0,
+          "mobileBannerUri": null,
+          "desktopBannerUri": null,
+          "aiSummary": "<ul><li>Masz 3–5+ lat w QA i praktyczne doświadczenie z <b>AxiomSL RegCloud</b> lub <b>ControllerView</b>.</li><li>Pracujesz z <b>SQL</b>, ETL i testowaniem baz danych oraz weryfikacją <b>data lineage</b> i <b>data quality</b>.</li><li>Testujesz regulatory reporting w formatach <b>XML/XBRL/CSV</b> oraz znasz lokalne/multijurysdykcyjne wymagania raportowe.</li><li>Posiadasz doświadczenie w tworzeniu <b>test cases</b>, test plans, używasz narzędzi typu <b>Jira/Xray/ALM</b>.</li><li>Komunikujesz się płynnie po <b>angielsku (min. B2/C1)</b> i jesteś zlokalizowany w <b>Europie</b>.</li></ul>",
+          "appliedProducts": []
+         },
+         {
+          "technologies": [],
+          "groupId": "00370000-56be-0050-6037-08df197ebdec",
+          "jobTitle": "Solution Architect Intern",
+          "companyName": "TRANSACTIONLINK sp. z o.o.",
+          "companyProfileAbsoluteUri": "https://pracodawcy.pracuj.pl/company/1074148217",
+          "companyId": 1074148217,
+          "companyLogoUri": null,
+          "lastPublicated": "2026-10-08T14:30:47.987Z",
+          "initialPublicated": "2026-09-23T14:30:47.987Z",
+          "expirationDate": "2026-10-23T21:59:59Z",
+          "salaryDisplayText": "5 000–7 000 zł / mies. (zal. od umowy)",
+          "isSuperOffer": false,
+          "isFranchise": false,
+          "isOptionalCv": false,
+          "isOneClickApply": true,
+          "isJobiconCompany": false,
+          "isRemoteWorkAllowed": false,
+          "offers": [
+           {
+            "partitionId": 1005113423,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/solution-architect-intern-warszawa-aleja-jana-pawla-ii-22,oferta,1005113423",
+            "displayWorkplace": "Warszawa, Śródmieście",
+            "isWholePoland": false,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 52.23615646362305,
+             "longitude": 20.998279571533203
+            },
+            "distanceInKilometers": null
+           }
+          ],
+          "positionLevels": [
+           "Praktykant / Praktykantka - stażysta / Stażystka"
+          ],
+          "typesOfContract": [
+           "Umowa zlecenie",
+           "Kontrakt B2B"
+          ],
+          "workSchedules": [
+           "Pełny etat"
+          ],
+          "workModes": [
+           "Praca stacjonarna"
+          ],
+          "primaryAttributes": [
+           {
+            "code": "immediate-employment",
+            "label": {
+             "text": "Immediate employment",
+             "pracujPlText": "Praca od zaraz",
+             "primaryTargetSiteText": "Praca od zaraz"
+            },
+            "model": {
+             "modelType": "flag",
+             "flag": true
+            }
+           }
+          ],
+          "commonOfferId": null,
+          "searchEngineRelevancyScore": 0,
+          "mobileBannerUri": null,
+          "desktopBannerUri": null,
+          "aiSummary": "<ul><li>Masz wykształcenie techniczne (ostatni rok studiów lub niedawny absolwent) i możesz pracować pełny etat.</li><li>Rozumiesz podstawy kodu i działania komputerów oraz chcesz uczyć się no-code budowy automatyzacji.</li><li>Lubisz rozwiązywać problemy i potrafisz doprowadzić zadanie do końca bez stałych instrukcji.</li><li>Komunikujesz się jasno i potrafisz zbierać oraz przekazywać feedback klientów zespołowi technicznemu.</li><li>Cenisz elastyczne warunki pracy, budżet na rozwój i pakiet świadczeń (opieka medyczna, dofinansowanie sportu).</li>",
+          "appliedProducts": []
+         },
+         {
+          "technologies": [
+           "C++",
+           "RTOS",
+           "Ethernet",
+           "TCP/IP"
+          ],
+          "groupId": "f81f0000-56be-0050-0e12-08df1968e657",
+          "jobTitle": "Starszy Programista / Starsza Programistka C++ Embedded (f/m/x)",
+          "companyName": "Sii Sp. z o.o.",
+          "companyProfileAbsoluteUri": "https://pracodawcy.pracuj.pl/company/20000761",
+          "companyId": 20000761,
+          "companyLogoUri": "https://logos.gpcdn.pl/loga-firm/20000761/03000000-bb2f-3863-1665-08d6dec4c54d_280x280.jpeg",
+          "lastPublicated": "2026-10-08T13:51:00Z",
+          "initialPublicated": "2026-09-23T13:51:26.837Z",
+          "expirationDate": "2026-10-23T21:59:59Z",
+          "salaryDisplayText": "",
+          "isSuperOffer": true,
+          "isFranchise": false,
+          "isOptionalCv": false,
+          "isOneClickApply": false,
+          "isJobiconCompany": false,
+          "isRemoteWorkAllowed": true,
+          "offers": [
+           {
+            "partitionId": 1005113319,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-bialystok-jozefa-marjanskiego-3,oferta,1005113319",
+            "displayWorkplace": "Białystok, Centrum",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 53.12976837158203,
+             "longitude": 23.154624938964844
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113315,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-bydgoszcz-plac-koscieleckich-3,oferta,1005113315",
+            "displayWorkplace": "Bydgoszcz",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 53.120662689208984,
+             "longitude": 18.003570556640625
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113322,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-gdansk-aleja-grunwaldzka-472e,oferta,1005113322",
+            "displayWorkplace": "Gdańsk, Oliwa",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 54.40420150756836,
+             "longitude": 18.571062088012695
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113324,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-katowice,oferta,1005113324",
+            "displayWorkplace": "Katowice",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 50.264400482177734,
+             "longitude": 19.025598526000977
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113320,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-krakow-wadowicka-12,oferta,1005113320",
+            "displayWorkplace": "Kraków, Podgórze",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 50.03062438964844,
+             "longitude": 19.93804168701172
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113314,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-lublin-tadeusza-szeligowskiego-6b,oferta,1005113314",
+            "displayWorkplace": "Lublin",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 51.25584411621094,
+             "longitude": 22.55763816833496
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113318,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-lodz-piotrkowska-157,oferta,1005113318",
+            "displayWorkplace": "Łódź, Śródmieście",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 51.75956726074219,
+             "longitude": 19.4561824798584
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113323,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-pila-wojciecha-kossaka-20,oferta,1005113323",
+            "displayWorkplace": "Piła",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 53.15786361694336,
+             "longitude": 16.75581169128418
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113325,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-poznan-krolowej-jadwigi-43,oferta,1005113325",
+            "displayWorkplace": "Poznań, Wilda",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 52.39899444580078,
+             "longitude": 16.93134117126465
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113321,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-rzeszow-aleja-tadeusza-rejtana-20b,oferta,1005113321",
+            "displayWorkplace": "Rzeszów",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 50.02711868286133,
+             "longitude": 22.01608657836914
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113326,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-szczecin,oferta,1005113326",
+            "displayWorkplace": "Szczecin",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": null,
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113316,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-torun,oferta,1005113316",
+            "displayWorkplace": "Toruń",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": null,
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113317,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-warszawa-aleja-niepodleglosci-69,oferta,1005113317",
+            "displayWorkplace": "Warszawa, Mokotów",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 52.19050598144531,
+             "longitude": 21.015926361083984
+            },
+            "distanceInKilometers": null
+           },
+           {
+            "partitionId": 1005113313,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/starszy-programista-starsza-programistka-c%2b%2b-embedded-f-m-x-wroclaw-na-ostatnim-groszu-3,oferta,1005113313",
+            "displayWorkplace": "Wrocław, Fabryczna",
+            "isWholePoland": true,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 51.12495040893555,
+             "longitude": 16.976348876953125
+            },
+            "distanceInKilometers": null
+           }
+          ],
+          "positionLevels": [
+           "Starszy specjalista / Starsza specjalistka (senior)"
+          ],
+          "typesOfContract": [
+           "Umowa o pracę",
+           "Kontrakt B2B"
+          ],
+          "workSchedules": [
+           "Pełny etat"
+          ],
+          "workModes": [
+           "Praca stacjonarna",
+           "Praca zdalna",
+           "Praca hybrydowa"
+          ],
+          "primaryAttributes": [],
+          "commonOfferId": null,
+          "searchEngineRelevancyScore": 0,
+          "mobileBannerUri": null,
+          "desktopBannerUri": null,
+          "aiSummary": "<ul><li>Masz minimum 5 lat doświadczenia z <b>C++</b> i rozwijasz oprogramowanie dla <b>systemów wbudowanych</b>.</li><li>Pracujesz z <b>RTOS</b> oraz znasz <b>Ethernet</b>/<b>TCP/IP</b> i model <b>OSI</b>.</li><li>Potrafisz debugować urządzenia embedded i poruszać się w dużej bazie <b>kod</b>u.</li><li>Komunikujesz się płynnie po <b>polsku</b> i <b>angielsku</b> oraz możesz pracować na terenie <b>Polski</b>.</li><li>Interesuje Cię udział w tworzeniu wysokopoziomowych komponentów i usług dla <b>automatyki przemysłowej</b>.</li></ul>",
+          "appliedProducts": []
+         },
+         {
+          "technologies": [],
+          "groupId": "742f0000-56be-0050-e0fa-08df1fc6f641",
+          "jobTitle": "Tester manualny / Testerka manualna",
+          "companyName": "EMPLO sp. z o.o.",
+          "companyProfileAbsoluteUri": "https://pracodawcy.pracuj.pl/company/1074087309",
+          "companyId": 1074087309,
+          "companyLogoUri": "https://logos.gpcdn.pl/loga-firm/1074087309/ee4d0000-5df0-0015-867a-08da17f3585a_280x280.jpg",
+          "lastPublicated": "2026-10-08T14:25:00Z",
+          "initialPublicated": "2026-10-01T14:24:58.43Z",
+          "expirationDate": "2026-10-31T22:59:59Z",
+          "salaryDisplayText": "",
+          "isSuperOffer": true,
+          "isFranchise": false,
+          "isOptionalCv": false,
+          "isOneClickApply": false,
+          "isJobiconCompany": false,
+          "isRemoteWorkAllowed": false,
+          "offers": [
+           {
+            "partitionId": 1005131096,
+            "offerAbsoluteUri": "https://www.pracuj.pl/praca/tester-manualny-testerka-manualna-warszawa-aleja-jana-pawla-ii-27,oferta,1005131096",
+            "displayWorkplace": "Warszawa, Wola",
+            "isWholePoland": false,
+            "appliedProducts": [],
+            "coordinates": {
+             "latitude": 52.238059997558594,
+             "longitude": 20.99568748474121
+            },
+            "distanceInKilometers": null
+           }
+          ],
+          "positionLevels": [
+           "Młodszy specjalista / Młodsza specjalistka (junior)",
+           "Specjalista / Specjalistka (mid / Regular)"
+          ],
+          "typesOfContract": [
+           "Kontrakt B2B"
+          ],
+          "workSchedules": [],
+          "workModes": [
+           "Praca stacjonarna",
+           "Praca hybrydowa"
+          ],
+          "primaryAttributes": [
+           {
+            "code": "immediate-employment",
+            "label": {
+             "text": "Praca od zaraz",
+             "pracujPlText": "Praca od zaraz",
+             "primaryTargetSiteText": "Praca od zaraz"
+            },
+            "model": {
+             "modelType": "flag",
+             "flag": true
+            }
+           }
+          ],
+          "commonOfferId": null,
+          "searchEngineRelevancyScore": 0,
+          "mobileBannerUri": null,
+          "desktopBannerUri": null,
+          "aiSummary": "<ul><li>Masz doświadczenie w <b>testowaniu aplikacji</b> i chcesz przygotowywać scenariusze oraz raportować błędy.</li><li>Potrafisz analizować <b>wymagania</b> i oceniać funkcjonalność z perspektywy użytkownika.</li><li>Stosujesz <b>narzędzia AI</b> do wspierania analizy wymagań, dokumentacji i testów.</li><li>Jesteś dokładny, komunikatywny i współpracujesz z <b>developerami</b> oraz analitykami.</li><li>Doceniasz <b>opieka medyczna</b> i dofinansowanie szkoleń jako element pakietu benefitów.</li></ul>",
+          "appliedProducts": []
+         }
+        ],
+        "groupedOffersTotalCount": 120
+       }
+      }
+     }
+    ]
+   }
+  }
+ }
+}

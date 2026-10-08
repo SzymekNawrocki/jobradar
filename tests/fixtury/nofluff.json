@@ -1,0 +1,422 @@
+{
+ "postings": [
+  {
+   "id": "sap-mm-consultant-itfs-Warszawa",
+   "name": "ITFS Sp. z o.o.",
+   "location": {
+    "places": [
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "city": "Warszawa",
+      "street": "",
+      "postalCode": "",
+      "geoLocation": {
+       "latitude": 52.2296756,
+       "longitude": 21.0122287
+      },
+      "url": "sap-mm-consultant-itfs-warszawa"
+     },
+     {
+      "city": "Remote",
+      "url": "sap-mm-consultant-itfs-remote"
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "lower-silesian",
+      "url": "sap-mm-consultant-itfs-lower-silesian",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "kuyavian-pomeranian",
+      "url": "sap-mm-consultant-itfs-kuyavian-pomeranian",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "lodz",
+      "url": "sap-mm-consultant-itfs-lodz",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "lublin",
+      "url": "sap-mm-consultant-itfs-lublin",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "lubusz",
+      "url": "sap-mm-consultant-itfs-lubusz",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "lesser-poland",
+      "url": "sap-mm-consultant-itfs-lesser-poland",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "opole",
+      "url": "sap-mm-consultant-itfs-opole",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "subcarpathian",
+      "url": "sap-mm-consultant-itfs-subcarpathian",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "podlaskie",
+      "url": "sap-mm-consultant-itfs-podlaskie",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "pomeranian",
+      "url": "sap-mm-consultant-itfs-pomeranian",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "silesian",
+      "url": "sap-mm-consultant-itfs-silesian",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "holy-cross",
+      "url": "sap-mm-consultant-itfs-holy-cross",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "warmian-masurian",
+      "url": "sap-mm-consultant-itfs-warmian-masurian",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "greater-poland",
+      "url": "sap-mm-consultant-itfs-greater-poland",
+      "provinceOnly": true
+     },
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "province": "west-pomeranian",
+      "url": "sap-mm-consultant-itfs-west-pomeranian",
+      "provinceOnly": true
+     }
+    ],
+    "fullyRemote": true,
+    "covidTimeRemotely": false,
+    "hybridDesc": ""
+   },
+   "posted": 1791296736911,
+   "renewed": 1791469536911,
+   "title": "SAP MM Consultant",
+   "logo": {
+    "original": "companies/logos/original/logo_biale_20230522_075850.jpg",
+    "jobs_details": "companies/logos/jobs_details/logo_biale_20230522_075850.jpg",
+    "jobs_listing": "companies/logos/jobs_listing/logo_biale_20230522_075850.jpg",
+    "jobs_details_2x": "companies/logos/jobs_details_2x/logo_biale_20230522_075850.jpg",
+    "jobs_listing_2x": "companies/logos/jobs_listing_2x/logo_biale_20230522_075850.jpg",
+    "companies_details": "companies/logos/companies_details/logo_biale_20230522_075850.jpg",
+    "companies_listing": "companies/logos/companies_listing/logo_biale_20230522_075850.jpg",
+    "jobs_details_webp": "companies/logos/jobs_details/logo_biale_20230522_075850.webp",
+    "jobs_listing_webp": "companies/logos/jobs_listing/logo_biale_20230522_075850.webp",
+    "companies_details_2x": "companies/logos/companies_details_2x/logo_biale_20230522_075850.jpg",
+    "companies_listing_2x": "companies/logos/companies_listing_2x/logo_biale_20230522_075850.jpg",
+    "jobs_details_2x_webp": "companies/logos/jobs_details_2x/logo_biale_20230522_075850.webp",
+    "jobs_listing_2x_webp": "companies/logos/jobs_listing_2x/logo_biale_20230522_075850.webp",
+    "original_pixel_image": "companies/logos/original_pixel_image/logo_biale_20230522_075850.jpg",
+    "companies_details_webp": "companies/logos/companies_details/logo_biale_20230522_075850.webp",
+    "companies_listing_webp": "companies/logos/companies_listing/logo_biale_20230522_075850.webp",
+    "companies_details_2x_webp": "companies/logos/companies_details_2x/logo_biale_20230522_075850.webp",
+    "companies_listing_2x_webp": "companies/logos/companies_listing_2x/logo_biale_20230522_075850.webp"
+   },
+   "category": "erp",
+   "seniority": [
+    "Senior"
+   ],
+   "url": "sap-mm-consultant-itfs-warszawa",
+   "regions": [
+    "pl"
+   ],
+   "fullyRemote": false,
+   "salary": {
+    "from": 25200.0,
+    "to": 30240.0,
+    "type": "b2b",
+    "currency": "PLN",
+    "period": "Month",
+    "disclosedAt": "VISIBLE",
+    "flexibleUpperBound": false
+   },
+   "flavors": [
+    "it"
+   ],
+   "topInSearch": false,
+   "highlighted": false,
+   "help4Ua": false,
+   "reference": "QA8YVLXQ",
+   "searchBoost": true,
+   "onlineInterviewAvailable": true,
+   "tiles": {
+    "values": [
+     {
+      "value": "erp",
+      "type": "category"
+     },
+     {
+      "value": "SAP",
+      "type": "requirement"
+     },
+     {
+      "value": "S4 HANA",
+      "type": "requirement"
+     },
+     {
+      "value": "SAP MM",
+      "type": "requirement"
+     }
+    ]
+   }
+  },
+  {
+   "id": "senior-java-developer-avenga-agencja-pracy-nr-kraz-8448-Warszawa-7",
+   "name": "AVENGA (Agencja Pracy, nr KRAZ: 8448)",
+   "location": {
+    "places": [
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "city": "Warszawa",
+      "street": "",
+      "postalCode": "",
+      "geoLocation": {
+       "latitude": 52.2296756,
+       "longitude": 21.0122287
+      },
+      "url": "senior-java-developer-avenga-agencja-pracy-nr-kraz-8448-warszawa-7"
+     }
+    ],
+    "fullyRemote": false,
+    "covidTimeRemotely": false,
+    "hybridDesc": "2x w miesiącu wizyty w biurze w Warszawie\n"
+   },
+   "posted": 1791463542353,
+   "title": "Senior Java Developer",
+   "technology": "Java",
+   "logo": {
+    "original": "companies/logos/original/pl_avenga_logo_20250526_112255.webp",
+    "jobs_details": "companies/logos/jobs_details/pl_avenga_logo_20250526_112255.webp",
+    "jobs_listing": "companies/logos/jobs_listing/pl_avenga_logo_20250526_112255.webp",
+    "jobs_details_2x": "companies/logos/jobs_details_2x/pl_avenga_logo_20250526_112255.webp",
+    "jobs_listing_2x": "companies/logos/jobs_listing_2x/pl_avenga_logo_20250526_112255.webp",
+    "companies_details": "companies/logos/companies_details/pl_avenga_logo_20250526_112255.webp",
+    "companies_listing": "companies/logos/companies_listing/pl_avenga_logo_20250526_112255.webp",
+    "jobs_details_webp": "companies/logos/jobs_details/pl_avenga_logo_20250526_112255.webp",
+    "jobs_listing_webp": "companies/logos/jobs_listing/pl_avenga_logo_20250526_112255.webp",
+    "companies_details_2x": "companies/logos/companies_details_2x/pl_avenga_logo_20250526_112255.webp",
+    "companies_listing_2x": "companies/logos/companies_listing_2x/pl_avenga_logo_20250526_112255.webp",
+    "jobs_details_2x_webp": "companies/logos/jobs_details_2x/pl_avenga_logo_20250526_112255.webp",
+    "jobs_listing_2x_webp": "companies/logos/jobs_listing_2x/pl_avenga_logo_20250526_112255.webp",
+    "original_pixel_image": "companies/logos/original_pixel_image/pl_avenga_logo_20250526_112255.webp",
+    "companies_details_webp": "companies/logos/companies_details/pl_avenga_logo_20250526_112255.webp",
+    "companies_listing_webp": "companies/logos/companies_listing/pl_avenga_logo_20250526_112255.webp",
+    "companies_details_2x_webp": "companies/logos/companies_details_2x/pl_avenga_logo_20250526_112255.webp",
+    "companies_listing_2x_webp": "companies/logos/companies_listing_2x/pl_avenga_logo_20250526_112255.webp"
+   },
+   "category": "backend",
+   "seniority": [
+    "Senior"
+   ],
+   "url": "senior-java-developer-avenga-agencja-pracy-nr-kraz-8448-warszawa-7",
+   "regions": [
+    "pl"
+   ],
+   "fullyRemote": false,
+   "salary": {
+    "from": 28560.0,
+    "to": 31920.0,
+    "type": "b2b",
+    "currency": "PLN",
+    "period": "Month",
+    "disclosedAt": "VISIBLE",
+    "flexibleUpperBound": false
+   },
+   "flavors": [
+    "it"
+   ],
+   "topInSearch": false,
+   "highlighted": false,
+   "help4Ua": false,
+   "reference": "N56GW5IN",
+   "searchBoost": false,
+   "onlineInterviewAvailable": true,
+   "tiles": {
+    "values": [
+     {
+      "value": "backend",
+      "type": "category"
+     },
+     {
+      "value": "Java",
+      "type": "requirement"
+     },
+     {
+      "value": "Spring Boot",
+      "type": "requirement"
+     },
+     {
+      "value": "Kafka",
+      "type": "requirement"
+     }
+    ]
+   }
+  },
+  {
+   "id": "mlodszy-serwisant-telefonow-m-k-devire-Warszawa",
+   "name": "Devire",
+   "location": {
+    "places": [
+     {
+      "country": {
+       "code": "POL",
+       "name": "Poland"
+      },
+      "city": "Warszawa",
+      "street": "",
+      "postalCode": "",
+      "geoLocation": {
+       "latitude": 52.2296756,
+       "longitude": 21.0122287
+      },
+      "url": "mlodszy-serwisant-telefonow-m-k-devire-warszawa"
+     }
+    ],
+    "fullyRemote": false,
+    "covidTimeRemotely": false,
+    "hybridDesc": ""
+   },
+   "posted": 1791206164619,
+   "renewed": 1791465364619,
+   "title": "Młodszy Serwisant Telefonów (M/K)",
+   "logo": {
+    "original": "companies/logos/original/logo_devire_20230926_085639_20230927_121424.webp",
+    "jobs_details": "companies/logos/jobs_details/logo_devire_20230926_085639_20230927_121424.webp",
+    "jobs_listing": "companies/logos/jobs_listing/logo_devire_20230926_085639_20230927_121424.webp",
+    "jobs_details_2x": "companies/logos/jobs_details_2x/logo_devire_20230926_085639_20230927_121424.webp",
+    "jobs_listing_2x": "companies/logos/jobs_listing_2x/logo_devire_20230926_085639_20230927_121424.webp",
+    "companies_details": "companies/logos/companies_details/logo_devire_20230926_085639_20230927_121424.webp",
+    "companies_listing": "companies/logos/companies_listing/logo_devire_20230926_085639_20230927_121424.webp",
+    "jobs_details_webp": "companies/logos/jobs_details/logo_devire_20230926_085639_20230927_121424.webp",
+    "jobs_listing_webp": "companies/logos/jobs_listing/logo_devire_20230926_085639_20230927_121424.webp",
+    "companies_details_2x": "companies/logos/companies_details_2x/logo_devire_20230926_085639_20230927_121424.webp",
+    "companies_listing_2x": "companies/logos/companies_listing_2x/logo_devire_20230926_085639_20230927_121424.webp",
+    "jobs_details_2x_webp": "companies/logos/jobs_details_2x/logo_devire_20230926_085639_20230927_121424.webp",
+    "jobs_listing_2x_webp": "companies/logos/jobs_listing_2x/logo_devire_20230926_085639_20230927_121424.webp",
+    "original_pixel_image": "companies/logos/original_pixel_image/logo_devire_20230926_085639_20230927_121424.webp",
+    "companies_details_webp": "companies/logos/companies_details/logo_devire_20230926_085639_20230927_121424.webp",
+    "companies_listing_webp": "companies/logos/companies_listing/logo_devire_20230926_085639_20230927_121424.webp",
+    "companies_details_2x_webp": "companies/logos/companies_details_2x/logo_devire_20230926_085639_20230927_121424.webp",
+    "companies_listing_2x_webp": "companies/logos/companies_listing_2x/logo_devire_20230926_085639_20230927_121424.webp"
+   },
+   "category": "other",
+   "seniority": [
+    "Junior"
+   ],
+   "url": "mlodszy-serwisant-telefonow-m-k-devire-warszawa",
+   "regions": [
+    "pl"
+   ],
+   "fullyRemote": false,
+   "salary": {
+    "from": 32,
+    "to": 32,
+    "type": "zlecenie",
+    "currency": "PLN",
+    "period": "Month",
+    "disclosedAt": "VISIBLE",
+    "flexibleUpperBound": false
+   },
+   "flavors": [
+    "it"
+   ],
+   "topInSearch": false,
+   "highlighted": false,
+   "help4Ua": false,
+   "reference": "6MWTEC0K",
+   "searchBoost": false,
+   "onlineInterviewAvailable": false,
+   "tiles": {
+    "values": [
+     {
+      "value": "other",
+      "type": "category"
+     },
+     {
+      "value": "pl",
+      "type": "jobLanguage"
+     }
+    ]
+   }
+  }
+ ],
+ "totalCount": 3,
+ "totalPages": 1
+}

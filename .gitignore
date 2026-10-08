@@ -10,3 +10,4 @@ oferty.html
 # Python
 __pycache__/
 *.pyc
+oferty.json

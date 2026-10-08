@@ -1,0 +1,252 @@
+{
+ "props": {
+  "pageProps": {
+   "offersResponse": {
+    "offers": [
+     {
+      "id": "01000000-70f6-92a4-0891-08df2544d654",
+      "groupId": "00c111f1-20c3-f111-bf5b-000d3a3a40a1",
+      "title": "Fullstack Developer (Java, Angular, Kafka)",
+      "employer": "IT CONNECT Sp. z o.o. Sp. k.",
+      "employerId": "1074056223",
+      "logoUrl": "https://logos.gpcdn.pl/loga-firm/1074056223/342a0000-56be-0050-c594-08dc4ef762d2_280x280.png",
+      "offerUrlName": "fullstack-developer-java-angular-kafka-warszawa,oferta,01000000-70f6-92a4-0891-08df2544d654",
+      "workplace": [
+       {
+        "location": "Gdańsk",
+        "city": "Gdańsk",
+        "region": "Pomeranian"
+       },
+       {
+        "location": "Warszawa",
+        "city": "Warszawa",
+        "region": "Masovian"
+       }
+      ],
+      "positionLevels": [
+       {
+        "value": "mid"
+       }
+      ],
+      "typesOfContracts": [
+       {
+        "id": 3,
+        "salary": {
+         "from": 155,
+         "to": 155,
+         "currencySymbol": "zł",
+         "timeUnitId": 1,
+         "timeUnit": {
+          "shortForm": "hr.",
+          "longForm": "hourly"
+         },
+         "kindName": "net (+ VAT)"
+        }
+       }
+      ],
+      "technologies": [
+       "Java",
+       "Spring Boot",
+       "Microservices",
+       "REST APIs",
+       "Angular",
+       "Angular Material",
+       "Kafka",
+       "SQL",
+       "Docker",
+       "Kubernetes",
+       "Git",
+       "Bitbucket",
+       "Jenkins"
+      ],
+      "new": true,
+      "publicationDateUtc": "2026-10-08T14:02:47.19",
+      "lastCall": false,
+      "language": "en",
+      "salary": {
+       "to": 155,
+       "currency": "zł",
+       "timeUnit": {
+        "shortForm": "hr.",
+        "longForm": "hourly"
+       }
+      },
+      "workModes": [
+       "hybrid"
+      ],
+      "immediateEmployment": true,
+      "isSupportingUkraine": false,
+      "addons": {
+       "searchableLocations": [],
+       "searchableRegions": [],
+       "isWholePoland": false
+      },
+      "isFromExternalLocations": false,
+      "badges": {
+       "new": true,
+       "lastCall": false,
+       "immediateEmployment": true,
+       "isSupportingUkraine": false,
+       "isFromExternalLocations": false,
+       "isQuickApply": false
+      },
+      "alpha": null
+     },
+     {
+      "id": "01000000-af85-32bc-17a7-08df2545d2a1",
+      "groupId": "a05fcfed-21c3-f111-bf5b-000d3a3a40a1",
+      "title": "Senior Dev Engineer",
+      "employer": "ING Bank Śląski S.A.",
+      "employerId": "18797224",
+      "logoUrl": "https://logos.gpcdn.pl/loga-firm/18797224/03000000-bb2f-3863-85d9-08da01ed7106_280x280.png",
+      "offerUrlName": "senior-dev-engineer-warszawa-pulawska-2,oferta,01000000-af85-32bc-17a7-08df2545d2a1",
+      "workplace": [
+       {
+        "location": "Katowice",
+        "city": "Katowice",
+        "region": "śląskie"
+       },
+       {
+        "location": "Warszawa, Mokotów",
+        "city": "Warszawa",
+        "region": "mazowieckie"
+       }
+      ],
+      "positionLevels": [
+       {
+        "value": "senior"
+       }
+      ],
+      "typesOfContracts": [
+       {
+        "id": 0,
+        "salary": {
+         "from": 15000,
+         "to": 20000,
+         "currencySymbol": "zł",
+         "timeUnitId": 0,
+         "timeUnit": {
+          "shortForm": "mies.",
+          "longForm": "miesięcznie"
+         },
+         "kindName": "brutto"
+        }
+       }
+      ],
+      "technologies": [
+       "Java",
+       "Python",
+       "Bash",
+       "SQL",
+       "Windows Server",
+       "Git"
+      ],
+      "new": true,
+      "publicationDateUtc": "2026-10-08T14:09:51.857",
+      "lastCall": false,
+      "language": "pl",
+      "salary": {
+       "to": 20000,
+       "currency": "zł",
+       "timeUnit": {
+        "shortForm": "mies.",
+        "longForm": "miesięcznie"
+       }
+      },
+      "workModes": [
+       "hybrydowa"
+      ],
+      "immediateEmployment": false,
+      "isSupportingUkraine": false,
+      "addons": {
+       "searchableLocations": [],
+       "searchableRegions": [],
+       "isWholePoland": false
+      },
+      "isFromExternalLocations": false,
+      "badges": {
+       "new": true,
+       "lastCall": false,
+       "immediateEmployment": false,
+       "isSupportingUkraine": false,
+       "isFromExternalLocations": false,
+       "isQuickApply": false
+      },
+      "alpha": null
+     },
+     {
+      "id": "01000000-af85-32bc-e276-08df25485944",
+      "groupId": "4ac0fa73-24c3-f111-bf5b-000d3a3a40a1",
+      "title": "Senior AI Data Software Engineer",
+      "employer": "EPAM Systems (Poland) sp. z o.o.",
+      "employerId": "20097714",
+      "logoUrl": "https://logos.gpcdn.pl/loga-firm/20097714/9b030000-5dac-0015-6883-08db89155d81_280x280.png",
+      "offerUrlName": "senior-ai-data-software-engineer-krakow-fabryczna-1a,oferta,01000000-af85-32bc-e276-08df25485944",
+      "workplace": [
+       {
+        "location": "Kraków, Grzegórzki",
+        "city": "Kraków",
+        "region": "Lesser Poland"
+       }
+      ],
+      "positionLevels": [
+       {
+        "value": "senior"
+       }
+      ],
+      "typesOfContracts": [
+       {
+        "id": 0,
+        "salary": null
+       },
+       {
+        "id": 3,
+        "salary": null
+       }
+      ],
+      "technologies": [
+       "Python",
+       "Spark",
+       "Databricks",
+       "Microsoft Azure",
+       "AWS",
+       "Google Cloud Platform",
+       "SQL",
+       "MongoDB"
+      ],
+      "new": true,
+      "publicationDateUtc": "2026-10-08T14:27:55.04",
+      "lastCall": false,
+      "language": "en",
+      "salary": null,
+      "workModes": [
+       "remote"
+      ],
+      "immediateEmployment": true,
+      "isSupportingUkraine": false,
+      "addons": {
+       "searchableLocations": [],
+       "searchableRegions": [],
+       "isWholePoland": true
+      },
+      "isFromExternalLocations": true,
+      "badges": {
+       "new": true,
+       "lastCall": false,
+       "immediateEmployment": true,
+       "isSupportingUkraine": false,
+       "isFromExternalLocations": true,
+       "isQuickApply": false
+      },
+      "alpha": null
+     }
+    ],
+    "page": {
+     "number": 1,
+     "size": 50,
+     "count": 57
+    }
+   }
+  }
+ }
+}
