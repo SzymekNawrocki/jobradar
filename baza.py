@@ -21,7 +21,8 @@ from pathlib import Path
 PLIK = Path(__file__).parent / "jobradar.db"
 
 # przy scalaniu tytul/firme/glowny link bierzemy z pierwszego portalu na liscie
-PRIORYTET = ["justjoin", "nofluff", "pracuj", "protocol", "bulldog", "solid", "linkedin"]
+PRIORYTET = ["justjoin", "nofluff", "pracuj", "protocol", "bulldog", "solid", "linkedin",
+             "kariera", "kprm"]
 
 SCHEMAT = """
 CREATE TABLE IF NOT EXISTS oferty (

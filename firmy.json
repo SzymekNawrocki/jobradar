@@ -1,0 +1,159 @@
+{
+  "_opis": "Katalog pracodawcow dla zakladki 'Firmy i panstwowka'. Linki sprawdzone 2026-10-12. aliasy = fragmenty nazwy firmy w ofertach (bez wielkosci liter) — po nich strona liczy, ile ofert tej firmy jest teraz w radarze.",
+  "kategorie": [
+    {
+      "nazwa": "Cyber",
+      "firmy": [
+        {
+          "nazwa": "NASK / CERT Polska",
+          "opis": "Państwowy instytut badawczy, CERT Polska, CSIRT NASK. Praktyki i staże m.in. w Centrum Cyberbezpieczeństwa.",
+          "linki": [["Kariera i praktyki", "https://www.nask.pl/kariera"], ["CERT Polska", "https://cert.pl/"]],
+          "aliasy": ["nask"],
+          "linkedin": "NASK"
+        },
+        {
+          "nazwa": "EXATEL",
+          "opis": "Państwowy operator telekomunikacyjny: własny SOC, pentesty, anty-DDoS. Radar skanuje jego oferty.",
+          "linki": [["Oferty pracy", "https://exatel.pl/kariera/oferty-pracy/"], ["Praktyki", "https://exatel.pl/kariera/praktyki/"]],
+          "aliasy": ["exatel"],
+          "linkedin": "EXATEL"
+        },
+        {
+          "nazwa": "Kwalifikacje do ECSC (CTF)",
+          "opis": "Konkurs CERT Polska, eliminacje do European Cyber Security Challenge. Dobry punkt w CV pod cyber, rekruterzy NASK go znają.",
+          "linki": [["Kwalifikacje 2026", "https://www.nask.pl/aktualnosci/sprawdz-sie-w-kwalifikacjach-do-ecsc-2026"]],
+          "aliasy": []
+        }
+      ]
+    },
+    {
+      "nazwa": "Wojsko i służby",
+      "firmy": [
+        {
+          "nazwa": "Wojska Obrony Cyberprzestrzeni",
+          "opis": "Rekrutacja ciągła: formularz i CV, stanowiska dla cywilów i żołnierzy. Na końcu procedura sprawdzająca.",
+          "linki": [["Kariera i formularz", "https://www.cyber.mil.pl/kariera/"]],
+          "aliasy": ["obrony cyberprzestrzeni"],
+          "linkedin": "Wojska Obrony Cyberprzestrzeni"
+        },
+        {
+          "nazwa": "WOT: Cyberkomponent",
+          "opis": "Służba terytorialna w zespole działań cyberprzestrzennych. Bez wcześniejszej służby: 16-dniowe szkolenie podstawowe.",
+          "linki": [["Rekrutacja", "https://terytorialsi.wp.mil.pl/cyberkomponent/rekrutacja"]],
+          "aliasy": []
+        },
+        {
+          "nazwa": "NCBC",
+          "opis": "Narodowe Centrum Bezpieczeństwa Cyberprzestrzeni (MON).",
+          "linki": [["Strona", "https://www.wojsko-polskie.pl/ncbc/"]],
+          "aliasy": ["ncbc", "narodowe centrum bezpieczeństwa cyberprzestrzeni"]
+        },
+        {
+          "nazwa": "ABW",
+          "opis": "Agencja Bezpieczeństwa Wewnętrznego. Oferty (m.in. cyberbezpieczeństwo, akredytacja systemów) bywają też na Pracuj.pl, więc radar je łapie.",
+          "linki": [["Strona (zakładka o pracy)", "https://www.abw.gov.pl/"]],
+          "aliasy": ["agencja bezpieczeństwa wewnętrznego", "abw"]
+        }
+      ]
+    },
+    {
+      "nazwa": "Zbrojeniówka",
+      "firmy": [
+        {
+          "nazwa": "Grupa PGZ",
+          "opis": "Polska Grupa Zbrojeniowa: PIT-RADWAR, WZE, Mesko, HSW, Stocznia Wojenna... Radar skanuje oferty całej grupy (Warszawa).",
+          "linki": [["Kariera w grupie", "https://grupapgz.pl/kariera/"]],
+          "aliasy": ["pgz", "mesko", "bumar", "jelcz", "wojskowe zakłady", "huta stalowa wola"],
+          "linkedin": "Polska Grupa Zbrojeniowa"
+        },
+        {
+          "nazwa": "PIT-RADWAR",
+          "opis": "Radiolokacja, obrona powietrzna, systemy dowodzenia (C4ISR). Warszawa.",
+          "linki": [["Kariera", "https://www.pitradwar.com/kariera"]],
+          "aliasy": ["pit-radwar"],
+          "linkedin": "PIT-RADWAR"
+        },
+        {
+          "nazwa": "WB Electronics / Grupa WB",
+          "opis": "Prywatna zbrojeniówka: drony, łączność, systemy dowodzenia. Ożarów Mazowiecki i Warszawa.",
+          "linki": [["Strona kariery", "https://kariera.wbgroup.com/"]],
+          "aliasy": ["wb electronics", "wb group", "grupa wb"],
+          "linkedin": "WB Electronics"
+        }
+      ]
+    },
+    {
+      "nazwa": "Państwowe instytucje i spółki",
+      "firmy": [
+        {
+          "nazwa": "Służba cywilna (KPRM)",
+          "opis": "Wszystkie urzędy i ministerstwa (m.in. Cyfryzacji, MSWiA, CBZC, sektorowe CSIRT-y). Radar skanuje stąd IT i cyber w Warszawie. Jest też newsletter.",
+          "linki": [["Nabory", "https://nabory.kprm.gov.pl/"]],
+          "aliasy": []
+        },
+        {
+          "nazwa": "COI: Centralny Ośrodek Informatyki",
+          "opis": "Budują mObywatela, ePUAP i inne systemy państwa.",
+          "linki": [["Pracuj z nami", "https://www.coi.gov.pl/pracuj-z-nami"]],
+          "aliasy": ["centralny ośrodek informatyki", "coi"],
+          "linkedin": "Centralny Ośrodek Informatyki"
+        },
+        {
+          "nazwa": "CIRF: staże w Ministerstwie Finansów",
+          "opis": "Program stażowy, m.in. ścieżka Cybersecurity SOC. Nabór wiosną (2026 zamknięty 25.05).",
+          "linki": [["Staże", "https://www.cirf.gov.pl/staz/"]],
+          "aliasy": ["centrum informatyki resortu finansów", "cirf"],
+          "linkedin": "Centrum Informatyki Resortu Finansów"
+        },
+        {
+          "nazwa": "MSWiA",
+          "opis": "Ministerstwo Spraw Wewnętrznych i Administracji: Departament Teleinformatyki.",
+          "linki": [["Praca", "https://www.gov.pl/web/mswia/praca"]],
+          "aliasy": ["mswia", "spraw wewnętrznych i administracji"]
+        },
+        {
+          "nazwa": "NBP",
+          "opis": "Narodowy Bank Polski: Departament Informatyki i Telekomunikacji, cyberbezpieczeństwo.",
+          "linki": [["Praca w NBP", "https://nbp.pl/o-nbp/praca-w-nbp/"]],
+          "aliasy": ["narodowy bank polski", "nbp"],
+          "linkedin": "Narodowy Bank Polski"
+        },
+        {
+          "nazwa": "PKO Bank Polski",
+          "opis": "Największy bank z udziałem Skarbu Państwa. Programy stażowe i duży dział IT i security.",
+          "linki": [["Oferty", "https://kariera.pkobp.pl/"]],
+          "aliasy": ["pko bank", "pko bp"],
+          "linkedin": "PKO Bank Polski"
+        },
+        {
+          "nazwa": "BGK",
+          "opis": "Bank Gospodarstwa Krajowego.",
+          "linki": [["Kariera", "https://www.bgk.pl/kariera-w-bgk/"]],
+          "aliasy": ["bank gospodarstwa krajowego", "bgk"],
+          "linkedin": "Bank Gospodarstwa Krajowego"
+        },
+        {
+          "nazwa": "PSE",
+          "opis": "Polskie Sieci Elektroenergetyczne: infrastruktura krytyczna, OT security.",
+          "linki": [["Kariera", "https://www.pse.pl/kariera"]],
+          "aliasy": ["polskie sieci elektroenergetyczne", "pse"],
+          "linkedin": "Polskie Sieci Elektroenergetyczne"
+        },
+        {
+          "nazwa": "GAZ-SYSTEM",
+          "opis": "Operator gazociągów przesyłowych: infrastruktura krytyczna.",
+          "linki": [["Kariera", "https://www.gaz-system.pl/pl/kariera.html"]],
+          "aliasy": ["gaz-system"],
+          "linkedin": "GAZ-SYSTEM"
+        },
+        {
+          "nazwa": "PKP Informatyka",
+          "opis": "Spółka IT grupy PKP.",
+          "linki": [["Oferty pracy", "https://www.pkp-informatyka.pl/kariera/"]],
+          "aliasy": ["pkp informatyka"],
+          "linkedin": "PKP Informatyka"
+        }
+      ]
+    }
+  ]
+}

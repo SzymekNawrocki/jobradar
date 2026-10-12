@@ -7,7 +7,7 @@ niz pol godziny, w tle skanuje portale (~30 s, strona pokazuje "skanuje"
 i sama dociaga wynik), a potem co pol godziny, dopoki okno jest otwarte.
 
 Serwer to wbudowany http.server, slucha tylko na 127.0.0.1 (nikt z sieci
-sie nie dobije). Strona (strona.html) pobiera dane z /api/lista,
+sie nie dobije). Strona (strona.html) pobiera dane z /api/lista i /api/firmy,
 a klikniecia wysyla na /api/status, /api/przejrzane i /api/skan.
 """
 
@@ -27,6 +27,7 @@ import skan
 
 PORT = 8010
 STRONA = Path(__file__).parent / "strona.html"
+FIRMY = Path(__file__).parent / "firmy.json"  # katalog do zakladki "Firmy i panstwowka"
 SKAN_STARSZY_NIZ_S = 30 * 60
 
 # jedno polaczenie z baza na caly serwer + zamek, bo zadania ida z roznych watkow
@@ -87,6 +88,8 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/lista":
             with zamek:
                 self._wyslij(dane_listy())
+        elif self.path == "/api/firmy":
+            self._wyslij(FIRMY.read_bytes())
         else:
             self._wyslij({"blad": "nie ma takiej strony"}, 404)
 

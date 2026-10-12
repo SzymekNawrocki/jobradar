@@ -65,6 +65,32 @@
   .stack span { background: var(--chip); border-radius: 4px; padding: 1px 6px; font-size: 12px; }
   .portale { font-size: 12px; color: var(--szary); }
   .portale a { color: var(--akcent); text-decoration: none; margin-right: 8px; }
+  .portale a.rekruterzy { color: var(--szary); }
+  .portale a.rekruterzy:hover { color: var(--akcent); }
+
+  .zakladki .widok { margin-left: 0; }
+  .zakladki .odstep { flex: 1; }
+
+  .opis-widoku { color: var(--szary); font-size: 13px; margin: 0 0 12px; }
+  h2.kategoria { font-size: 15px; margin: 22px 0 6px; color: var(--szary);
+                 text-transform: uppercase; letter-spacing: .04em; }
+  .firma { background: var(--karta); border: 1px solid var(--ramka); border-radius: 8px;
+           padding: 12px 14px; margin: 8px 0; }
+  .firma .nazwa { font-weight: 600; font-size: 15px; }
+  .firma .ile { color: var(--zielony); font-size: 12px; font-weight: 600; margin-left: 6px; }
+  .firma .ile.zero { color: var(--szary); font-weight: normal; }
+  .firma .ile.apl { color: var(--akcent); }
+  .firma .opis { color: var(--szary); font-size: 13px; margin: 2px 0 6px; }
+  .linki { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; }
+  .linki a { color: var(--akcent); text-decoration: none; }
+  .linki a.li { color: var(--szary); }
+  .linki a:hover { color: var(--akcent); text-decoration: underline; }
+  .firma ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; }
+  .firma li { margin: 2px 0; color: var(--szary); }
+  .firma li a { color: var(--tekst); text-decoration: none; }
+  .firma li a:hover { color: var(--akcent); }
+  .znacznik { font-size: 11px; border-radius: 4px; padding: 0 5px; margin-left: 4px;
+              background: var(--chip); color: var(--akcent); }
   .akcje { grid-column: 2; grid-row: 1 / span 4; display: flex; flex-direction: column; gap: 6px;
            align-self: start; }
   .akcje button { font-size: 12px; padding: 5px 10px; white-space: nowrap; }
@@ -88,12 +114,17 @@
   </header>
   <div id="skan-info">Ładuję…</div>
 
+
   <nav class="zakladki">
     <button data-zakladka="" class="on" onclick="zakladka(this)">Do przejrzenia</button>
     <button data-zakladka="aplikowane" onclick="zakladka(this)">Zaaplikowane</button>
     <button data-zakladka="ukryte" onclick="zakladka(this)">Ukryte</button>
+    <span class="odstep"></span>
+    <button class="widok" data-widok="firmy" onclick="widok(this)">🏛️ Firmy i państwówka</button>
+    <button class="widok" data-widok="rekruterzy" onclick="widok(this)">👤 Rekruterzy</button>
   </nav>
 
+  <section id="widok-oferty">
   <div class="filtry">
     <span class="etykieta">Opublikowane:</span>
     <button class="chip swiezosc" data-dni="1" onclick="swiezosc(this)">dziś</button>
@@ -114,17 +145,43 @@
   <div id="licznik"></div>
   <div id="lista"></div>
   <div id="puste" hidden>Nic tu nie ma.</div>
+  </section>
+
+  <section id="widok-firmy" hidden>
+    <p class="opis-widoku">Pracodawcy z cyber, wojska, zbrojeniówki i państwówki: strony kariery,
+      praktyki, ludzie na LinkedIn i oferty, które radar ma teraz od nich. Katalog jest w <code>firmy.json</code>.</p>
+    <div id="firmy-teraz"></div>
+    <div id="firmy-katalog">Ładuję…</div>
+  </section>
+
+  <section id="widok-rekruterzy" hidden>
+    <p class="opis-widoku">Firmy z Twoich ofert. Te, do których aplikowałeś, są na górze, bo po
+      aplikacji warto napisać do rekrutera. Linki otwierają wyszukiwarkę osób na LinkedIn
+      (trzeba być zalogowanym). „Ludzie z IT” to szansa na polecenie.</p>
+    <div class="filtry">
+      <input type="search" id="szukaj-firmy" placeholder="Szukaj firmy…" oninput="rysujRekruterow()">
+      <label class="check"><input type="checkbox" id="tylko-aplikowane" onchange="rysujRekruterow()">
+        tylko gdzie aplikowałem</label>
+    </div>
+    <div id="licznik-firm" class="opis-widoku"></div>
+    <div id="lista-firm"></div>
+  </section>
 </main>
 
 <script>
 let OFERTY = [];
 let aktywnaZakladka = "";
 const tryby = new Set();
+let aktywnyWidok = "oferty";  // "oferty" | "firmy" | "rekruterzy"
+let KATALOG = null;          // firmy.json, wczytany przy pierwszym wejsciu w zakladke
 let maksDni = 7;  // najwazniejszy filtr: swiezosc (0 = bez limitu)
 
 const PORTALE = { justjoin: "JustJoin", nofluff: "NoFluff", pracuj: "Pracuj",
                   protocol: "theprotocol", bulldog: "Bulldog",
-                  solid: "SolidJobs", linkedin: "LinkedIn" };
+                  solid: "SolidJobs", linkedin: "LinkedIn",
+                  kprm: "Służba cywilna", kariera: "Strona firmy" };
+// tu tytul bywa ogolny ("specjalista") — o tym, czy to IT, mowi dopiero dzial
+const Z_DZIALEM = new Set(["kprm", "kariera"]);
 const TRYBY = { zdalna: "zdalnie", hybrydowa: "hybrydowo", biuro: "biuro" };
 
 async function wczytaj() {
@@ -133,6 +190,8 @@ async function wczytaj() {
   OFERTY = dane.oferty;
   pokazSkan(dane.skan);
   rysuj();
+  if (aktywnyWidok === "firmy") rysujFirmy();
+  if (aktywnyWidok === "rekruterzy") rysujRekruterow();
 }
 
 function pokazSkan(skan) {
@@ -179,7 +238,7 @@ function rysuj() {
 
   const ile = s => OFERTY.filter(o => (o.status || "") === s).length;
   const nowych = OFERTY.filter(o => o.nowe && !o.status).length;
-  document.querySelectorAll(".zakladki button").forEach(b => {
+  document.querySelectorAll(".zakladki button[data-zakladka]").forEach(b => {
     const nazwy = { "": "Do przejrzenia", aplikowane: "Zaaplikowane", ukryte: "Ukryte" };
     b.textContent = `${nazwy[b.dataset.zakladka]} (${ile(b.dataset.zakladka)})`;
   });
@@ -194,7 +253,8 @@ function karta(o) {
     ? `<button onclick="status('${o.id}', null)">↩ Cofnij</button>`
     : `<button onclick="status('${o.id}', 'aplikowane')">✓ Zaaplikowałem</button>
        <button onclick="status('${o.id}', 'ukryte')">✕ Ukryj</button>`;
-  const meta = [esc(o.firma), widelki(o), miejsce(o), wiek(o.data)].filter(Boolean).join(" · ");
+  const dzial = o.portale.some(p => Z_DZIALEM.has(p)) ? esc(o.kategoria) : "";
+  const meta = [esc(o.firma), dzial, widelki(o), miejsce(o), wiek(o.data)].filter(Boolean).join(" · ");
   return `
   <article class="oferta${o.nowe && !o.status ? " nowa" : ""}">
     <div class="lewa">
@@ -204,9 +264,155 @@ function karta(o) {
     <div class="lewa meta">${meta}</div>
     ${o.stack.length ? `<div class="lewa stack">${o.stack.slice(0, 8).map(s => `<span>${esc(s)}</span>`).join("")}</div>` : ""}
     <div class="lewa portale">${o.linki.map(l =>
-      `<a href="${esc(l.url)}" target="_blank" rel="noopener">${PORTALE[l.portal] || l.portal} ↗</a>`).join("")}</div>
+      `<a href="${esc(l.url)}" target="_blank" rel="noopener">${PORTALE[l.portal] || l.portal} ↗</a>`).join("")}<a
+      class="rekruterzy" href="${esc(rekruterzy(o.firma))}" target="_blank" rel="noopener"
+      title="Rekruterzy i HR tej firmy na LinkedIn (wymaga zalogowania)">👤 rekruterzy</a></div>
     <div class="akcje">${akcje}</div>
   </article>`;
+}
+
+// Forma prawna ("Sp. z o.o.", "S.A.") psuje wyszukiwanie i grupowanie — ucinamy.
+function nazwaFirmy(firma) {
+  return (firma || "")
+    .replace(/\b(sp\.?\s*z\s*o\.?\s*o\.?|s\.?\s*a\.?|sp\.?\s*k\.?|sp\.?\s*j\.?|spółka.*)$/gi, "")
+    .replace(/[\s,.-]+$/, "").trim();
+}
+
+// Wyszukiwarka osob na LinkedIn. Nic nie pobieramy — to tylko linki,
+// otwierasz je zalogowany.
+const LI_OSOBY = {
+  rekruterzy: '(recruiter OR rekruter OR rekruterka OR "talent acquisition" OR HR)',
+  it: '(developer OR programista OR engineer OR inżynier OR security OR cyber OR administrator)',
+};
+function linkedin(firma, kogo) {
+  const fraza = `"${nazwaFirmy(firma)}" ${LI_OSOBY[kogo]}`;
+  return "https://www.linkedin.com/search/results/people/?keywords=" + encodeURIComponent(fraza);
+}
+function linkedinFirma(firma) {
+  return "https://www.linkedin.com/search/results/companies/?keywords=" + encodeURIComponent(nazwaFirmy(firma));
+}
+function rekruterzy(firma) { return linkedin(firma, "rekruterzy"); }
+
+function linkiLinkedin(firma) {
+  return `<a class="li" href="${esc(linkedin(firma, "rekruterzy"))}" target="_blank" rel="noopener">👤 rekruterzy / HR</a>
+    <a class="li" href="${esc(linkedin(firma, "it"))}" target="_blank" rel="noopener">🧑‍💻 ludzie z IT</a>
+    <a class="li" href="${esc(linkedinFirma(firma))}" target="_blank" rel="noopener">🏢 firma na LinkedIn</a>`;
+}
+
+// --------------------------------------------------------------------------
+// widoki: oferty / firmy i panstwowka / rekruterzy
+// --------------------------------------------------------------------------
+
+function widok(btn) {
+  aktywnyWidok = btn ? btn.dataset.widok : "oferty";
+  for (const w of ["oferty", "firmy", "rekruterzy"])
+    document.getElementById("widok-" + w).hidden = w !== aktywnyWidok;
+  document.querySelectorAll(".zakladki button").forEach(b =>
+    b.classList.toggle("on", btn ? b === btn : b.dataset.zakladka === aktywnaZakladka));
+  if (aktywnyWidok === "firmy") rysujFirmy();
+  if (aktywnyWidok === "rekruterzy") rysujRekruterow();
+}
+
+// oferty, ktore widzisz (ukryte pomijamy)
+const widoczne = () => OFERTY.filter(o => o.status !== "ukryte");
+
+// alias "pse" ma pasowac do "PSE S.A.", ale nie do "Pseudo" — cale slowa
+function pasujeAlias(firma, aliasy) {
+  const slowa = s => " " + zwykly(s).replace(/[^a-z0-9]+/g, " ").trim() + " ";
+  const f = slowa(firma);
+  return aliasy.some(a => f.includes(slowa(a)));
+}
+
+function grupujPoFirmie(oferty) {
+  const grupy = new Map();
+  for (const o of oferty) {
+    const k = nazwaFirmy(o.firma);
+    if (!k) continue;
+    if (!grupy.has(k)) grupy.set(k, []);
+    grupy.get(k).push(o);
+  }
+  return grupy;
+}
+
+function listaOfert(oferty, ile = 6) {
+  if (!oferty.length) return "";
+  const pozycje = oferty.slice(0, ile).map(o => {
+    const dzial = o.kategoria && o.portale.some(p => Z_DZIALEM.has(p)) ? " · " + esc(o.kategoria) : "";
+    return `<li><a href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.tytul)}</a>${dzial}
+      ${o.status === "aplikowane" ? '<span class="znacznik">✓ aplikowane</span>' : ""}
+      ${o.nowe && !o.status ? '<span class="znacznik">🆕</span>' : ""}</li>`;
+  }).join("");
+  const reszta = oferty.length > ile ? `<li>…i ${oferty.length - ile} więcej (szukaj w zakładce z ofertami)</li>` : "";
+  return `<ul>${pozycje}${reszta}</ul>`;
+}
+
+// 1 oferta, 2-4 oferty (ale 12-14 ofert), reszta ofert
+const ileOfert = n => n === 1 ? "1 oferta"
+  : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? `${n} oferty` : `${n} ofert`;
+
+async function rysujFirmy() {
+  if (!KATALOG) {
+    try { KATALOG = await (await fetch("/api/firmy")).json(); }
+    catch (e) {
+      document.getElementById("firmy-katalog").textContent = "Nie udało się wczytać firmy.json.";
+      return;
+    }
+  }
+  const oferty = widoczne();
+
+  // 1. co radar ma TERAZ z panstwowki i stron firm — pogrupowane po pracodawcy
+  const zrodla = oferty.filter(o => o.portale.some(p => Z_DZIALEM.has(p)));
+  const grupy = [...grupujPoFirmie(zrodla)].sort((a, b) => b[1].length - a[1].length);
+  document.getElementById("firmy-teraz").innerHTML = grupy.length ? `
+    <h2 class="kategoria">Teraz w radarze: urzędy i strony firm (${zrodla.length})</h2>
+    ${grupy.map(([firma, lista]) => `
+      <div class="firma">
+        <span class="nazwa">${esc(firma)}</span><span class="ile">${ileOfert(lista.length)}</span>
+        <div class="linki">${linkiLinkedin(firma)}</div>
+        ${listaOfert(lista)}
+      </div>`).join("")}` : "";
+
+  // 2. katalog: kazda firma z linkami i ofertami, ktore radar od niej ma
+  document.getElementById("firmy-katalog").innerHTML = KATALOG.kategorie.map(k => `
+    <h2 class="kategoria">${esc(k.nazwa)}</h2>
+    ${k.firmy.map(f => {
+      const jej = f.aliasy.length ? oferty.filter(o => pasujeAlias(o.firma, f.aliasy)) : [];
+      const apl = jej.filter(o => o.status === "aplikowane").length;
+      const ile = !f.aliasy.length ? ""
+        : `<span class="ile${jej.length ? "" : " zero"}">${jej.length ? ileOfert(jej.length) + " w radarze" : "brak ofert w radarze"}</span>`;
+      return `
+      <div class="firma">
+        <span class="nazwa">${esc(f.nazwa)}</span>${ile}
+        ${apl ? `<span class="ile apl">✓ aplikowałeś: ${apl}</span>` : ""}
+        <div class="opis">${esc(f.opis)}</div>
+        <div class="linki">
+          ${f.linki.map(([nazwa, url]) => `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(nazwa)} ↗</a>`).join("")}
+          ${f.linkedin ? linkiLinkedin(f.linkedin) : ""}
+        </div>
+        ${listaOfert(jej)}
+      </div>`;
+    }).join("")}`).join("");
+}
+
+function rysujRekruterow() {
+  const slowa = zwykly(document.getElementById("szukaj-firmy").value).split(/\s+/).filter(Boolean);
+  const tylkoApl = document.getElementById("tylko-aplikowane").checked;
+  const firmy = [...grupujPoFirmie(widoczne())]
+    .map(([firma, lista]) => ({ firma, lista, apl: lista.filter(o => o.status === "aplikowane").length }))
+    .filter(f => !tylkoApl || f.apl)
+    .filter(f => slowa.every(s => zwykly(f.firma).includes(s)))
+    // najpierw tam, gdzie aplikowales (follow-up), potem najwiecej ofert
+    .sort((a, b) => b.apl - a.apl || b.lista.length - a.lista.length || a.firma.localeCompare(b.firma, "pl"));
+  const POKAZ = 150;  // ~400 firm naraz to za dlugi ekran
+  document.getElementById("licznik-firm").textContent =
+    `${firmy.length} firm` + (firmy.length > POKAZ ? ` · pokazuję ${POKAZ}, zawęź szukajką` : "");
+  document.getElementById("lista-firm").innerHTML = firmy.slice(0, POKAZ).map(f => `
+    <div class="firma">
+      <span class="nazwa">${esc(f.firma)}</span><span class="ile">${ileOfert(f.lista.length)}</span>
+      ${f.apl ? `<span class="ile apl">✓ aplikowałeś: ${f.apl}</span>` : ""}
+      <div class="linki">${linkiLinkedin(f.firma)}</div>
+      ${listaOfert(f.lista, 3)}
+    </div>`).join("") || '<div id="puste">Nic tu nie ma.</div>';
 }
 
 function widelki(o) {
@@ -246,7 +452,7 @@ function esc(s) {
 
 function zakladka(btn) {
   aktywnaZakladka = btn.dataset.zakladka;
-  document.querySelectorAll(".zakladki button").forEach(b => b.classList.toggle("on", b === btn));
+  widok(null);
   rysuj();
 }
 

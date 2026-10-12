@@ -212,6 +212,69 @@ class LinkedIn(unittest.TestCase):
         self.assertEqual(p("Internal Tools Developer"), [])  # "internal" to nie "intern"
 
 
+class Kprm(unittest.TestCase):
+    """Sluzba cywilna: tytuly sa ogolne, wiec IT poznajemy tez po dziale."""
+
+    def setUp(self):
+        self.oferty = portale.parsuj_kprm(wczytaj("kprm"))
+        self.tytuly = " | ".join(o["tytul"] for o in self.oferty)
+
+    def test_mlodszy_informatyk_to_junior(self):
+        o = po_tytule(self.oferty, "młodszy informatyk")
+        self.assertEqual(o["poziomy"], ["junior"])
+        self.assertEqual(o["firma"], "Urząd do Spraw Cudzoziemców w Warszawie")
+        self.assertTrue(o["url"].startswith("https://nabory.kprm.gov.pl/mazowieckie/warszawa/"))
+        self.assertGreater(o["wygasa"], 0)
+
+    def test_ogolny_tytul_w_dziale_it_zostaje(self):
+        o = po_tytule(self.oferty, "konsultant")
+        self.assertEqual(o["kategoria"], "Wydziale Zarządzania Bezpieczeństwem Informacji "
+                                         "w Biurze Zarządzania Bezpieczeństwem Informacji")
+        self.assertTrue(portale._dla_mnie(o))
+
+    def test_spoza_it_odpada(self):
+        self.assertNotIn("sekretarz", self.tytuly)
+        # "Obsługi Informacyjnej" (policja) to nie informatyka
+        self.assertFalse(any("Informacyjnej" in o["kategoria"] for o in self.oferty))
+
+    def test_hierarchia_stanowisk(self):
+        p = portale._kprm_poziomy
+        self.assertEqual(p("starszy specjalista/starsza specjalistka"), ["mid"])
+        self.assertEqual(p("główny specjalista/główna specjalistka"), ["senior"])
+        self.assertEqual(p("radca/radczyni"), ["senior"])
+        self.assertEqual(p("referent/referentka"), ["junior"])
+        self.assertEqual(p("specjalista/specjalistka"), ["junior", "mid"])
+
+
+class Kariera(unittest.TestCase):
+    """Strony karier na eRecruiterze: Grupa PGZ (kolumna ze spolka) i EXATEL (z data)."""
+
+    def setUp(self):
+        self.pgz = portale.parsuj_kariera(wczytaj("kariera"), "cfg", "Grupa PGZ")
+        self.exatel = portale.parsuj_kariera(wczytaj("kariera_exatel"), "cfg", "EXATEL")
+        self.tytuly = " | ".join(o["tytul"] for o in self.pgz + self.exatel)
+
+    def test_spolka_z_kolumny_zamiast_nazwy_grupy(self):
+        o = po_tytule(self.pgz, "Administrator systemów i sieci komputerowych")
+        self.assertEqual(o["firma"], "PIT-RADWAR S.A.")
+        self.assertEqual(o["miasta"], ["Warszawa"])
+        self.assertEqual(o["poziomy"], ["junior", "mid"])  # bez poziomu w tytule
+        self.assertIn("Offer.aspx?oid=", o["url"])
+
+    def test_polskie_slowa_it(self):
+        self.assertIn("Administrator sieci teleinformatycznych", self.tytuly)
+
+    def test_wyzsze_stanowiska_i_spoza_it_odpadaja(self):
+        self.assertNotIn("Starszy", self.tytuly)
+        self.assertNotIn("Magazynier", self.tytuly)
+        self.assertNotIn("Administracji Sprzedaży", self.tytuly)  # "młodszy", ale nie IT
+
+    def test_firma_i_data_gdy_jest_kolumna(self):
+        o = po_tytule(self.exatel, "DevOps")
+        self.assertEqual(o["firma"], "EXATEL")
+        self.assertEqual(o["data"], portale._ts("2026-09-04T00:00:00+01:00"))
+
+
 class Normalizacja(unittest.TestCase):
     def test_literowka_w_widelkach_odrzucona(self):
         o = portale._oferta(wid_od=21840, wid_do=3276000)

@@ -14,9 +14,10 @@ Kazdy portal ma dwie funkcje:
 Wspolny format oferty:
 
     {
-      "id":       "jj-...", "nf-...", "pr-...", "tp-...", "bd-...", "sj-...", "li-..."
+      "id":       "jj-...", "nf-...", "pr-...", "tp-...", "bd-...", "sj-...", "li-...",
+                  "kp-...", "er-..."
       "portal":   "justjoin" / "nofluff" / "pracuj" / "protocol" / "bulldog"
-                  / "solid" / "linkedin",
+                  / "solid" / "linkedin" / "kprm" / "kariera",
       "tytul", "firma", "url",
       "miasta":   ["Warszawa", ...],
       "lokacja":  "Warszawa, Kraków" (to samo jako tekst),
@@ -38,6 +39,8 @@ Zrodla danych (zweryfikowane 2026-10-08):
   bulldog   -> bulldogjob.pl, __NEXT_DATA__ (data tylko na stronie oferty)
   solid     -> solid.jobs/public-api/offers (feed dla agregatorow, JSON)
   linkedin  -> linkedin.com/jobs-guest (HTML kart, bez logowania; tylko Warszawa)
+  kprm      -> nabory.kprm.gov.pl (HTML; sluzba cywilna, Warszawa, IT/cyber)
+  kariera   -> skk.erecruiter.pl (widget "Oferty pracy" na stronach firm)
 
 Uwaga na daty: JustJoin i Pracuj podaja tez date ODSWIEZENIA (platny "bump"),
 przez ktora miesieczna oferta wyglada na dzisiejsza. Bierzemy zawsze pierwsza
@@ -698,6 +701,184 @@ def pobierz_linkedin():
     return [o for o in wynik.values() if _dla_mnie(o)]
 
 
+# --------------------------------------------------------------------------
+# KPRM — nabory w sluzbie cywilnej (ministerstwa, urzedy, CBZC, CSIRT-y)
+# --------------------------------------------------------------------------
+
+# Panstwowka nie wystawia sie na portalach IT. Wyszukiwarka nie zna poziomu
+# ani "IT" — filtrujemy po branzy (IT, informatyzacja) i frazach, a potem
+# lokalnie po tytule i dziale. Data publikacji jest tylko na liscie BEZ
+# filtrow, wiec liczy sie pierwszy raz widziana (baza robi to sama).
+KP_URL = ("https://nabory.kprm.gov.pl/?Ad%5Bid_city%5D%5B%5D=1436"  # Warszawa
+          "&Ad%5Bprocess_state%5D=1&Ad%5BpagesCnt%5D=20&search-button=&page={strona}{filtr}")
+KP_FILTRY = [
+    "&Ad%5Bbranch_ids%5D%5B%5D=1531&Ad%5Bbranch_ids%5D%5B%5D=1533",  # informatyzacja, IT
+    "&Ad%5Bphrase%5D=" + urllib.parse.quote("cyberbezpieczeństwo"),
+    "&Ad%5Bphrase%5D=teleinformaty",
+    "&Ad%5Bphrase%5D=informaty",
+]
+KP_MAKS_STRON = 10
+
+KP_IT = re.compile(
+    r"informaty|cyber|csirt|cyfrow|cyfryzac|aplikacj|programi|oprogramow|\bit\b"
+    r"|bezpiecze\w* (informacji|teleinf|komputer|sieci|system)|sieci|system\w* informat",
+    re.I)
+# nazwy stanowisk, ktore same nic nie mowia — wtedy decyduje dzial
+KP_OGOLNE = re.compile(r"specjalist|analityk|konsultant|inspektor|referent|ekspert"
+                       r"|radc|asystent|sta[żz]yst", re.I)
+# hierarchia sluzby cywilnej: referent < mlodszy specjalista < specjalista
+# < starszy < glowny; "radca"/"ekspert" to wyzsze stanowiska
+KP_POZIOMY = [
+    (re.compile(r"naczelni|kierowni|dyrektor|zast[eę]p", re.I), ["lead"]),
+    (re.compile(r"g[łl][óo]wn|radc|ekspert", re.I), ["senior"]),
+    (re.compile(r"starsz", re.I), ["mid"]),
+    (re.compile(r"sta[żz]yst|praktykant", re.I), ["staz"]),
+    (re.compile(r"m[łl]odsz|referent|asystent", re.I), ["junior"]),
+]
+
+
+def _kprm_poziomy(tytul):
+    for wzor, poziomy in KP_POZIOMY:
+        if wzor.search(tytul):
+            return poziomy
+    return ["junior", "mid"]  # "specjalista", "informatyk" — czesto bez wymaganego stazu
+
+
+def parsuj_kprm(strona):
+    """Lista naborow (HTML) -> oferty IT/cyber. Reszte pomija."""
+    oferty = []
+    for li in strona.split("<li class='row'>")[1:]:
+        pole = lambda nazwa: re.search(nazwa + r":</span><b>\s*(.*?)\s*</b>", li, re.S)
+        href = re.search(r"<a href='([^']+)'", li)
+        nr = re.search(r"NR (\d+)", li)
+        tytul = re.search(r"<strong class='title'>\s*(.*?)\s*</strong>", li, re.S)
+        if not (href and nr and tytul):
+            continue
+        tytul = " ".join(html.unescape(tytul.group(1)).split())
+        dzial = " ".join(html.unescape(pole("DZIAŁ").group(1)).split()) if pole("DZIAŁ") else ""
+        if not (KP_IT.search(tytul) or (KP_OGOLNE.search(tytul) and KP_IT.search(dzial))):
+            continue
+        urzad, miasto, wazne = pole("URZĄD"), pole("MIEJSCOWOŚĆ"), pole("WAŻNE DO")
+        oferty.append(_oferta(
+            id=f"kp-{nr.group(1)}",
+            portal="kprm",
+            tytul=tytul,
+            firma=html.unescape(urzad.group(1)) if urzad else "",
+            url="https://nabory.kprm.gov.pl" + href.group(1),
+            miasta=[html.unescape(miasto.group(1))] if miasto else [],
+            wygasa=_ts(datetime.strptime(wazne.group(1), "%d.%m.%Y")
+                       .strftime("%Y-%m-%dT23:59:59+01:00")) if wazne else 0,
+            poziomy=_kprm_poziomy(tytul),
+            umowy=["uop"],
+            kategoria=dzial[2:] if dzial.startswith("w ") else dzial,
+        ))
+    return oferty
+
+
+def pobierz_kprm():
+    wynik = {}
+    for filtr in KP_FILTRY:
+        for strona in range(1, KP_MAKS_STRON + 1):
+            tekst = _pobierz(KP_URL.format(strona=strona, filtr=filtr))
+            if strona == 1 and 'id="searchResults"' not in tekst:
+                raise ValueError("brak listy wynikow — KPRM zmienil strone?")
+            for o in parsuj_kprm(tekst):
+                wynik.setdefault(o["id"], o)
+            # Yii przy stronie za ostatnia oddaje znowu ostatnia — konczymy,
+            # gdy nie ma linku do nastepnej
+            if f"page={strona + 1}&" not in tekst:
+                break
+            time.sleep(PRZERWA_S)
+    return [o for o in wynik.values() if _dla_mnie(o)]
+
+
+# --------------------------------------------------------------------------
+# Strony karier firm na eRecruiterze (Exatel, Grupa PGZ, ...)
+# --------------------------------------------------------------------------
+
+# Wiele polskich spolek (skarbu panstwa, zbrojeniowka, banki) ma na stronie
+# "Oferty pracy" widget eRecruitera. Jego dane to jeden JSONP z tabela HTML.
+# Nowa firma: wejdz na jej strone kariery, w zrodle strony znajdz
+# "erecruiter.pl/Code.ashx?cfg=<32 znaki>" i dopisz tu (cfg, nazwa).
+# Nazwa jest dla ofert bez kolumny "firma" (Grupa PGZ ja ma — tam spolka).
+ER_FIRMY = [
+    ("b5effe98dc4845fcbf005743f0862361", "EXATEL"),
+    ("055531097fe04079a190d2f210485080", "Grupa PGZ"),
+]
+ER_URL = "https://skk.erecruiter.pl/GetHtml.ashx?cfg={cfg}&filters=all&grid=all&pn={strona}"
+ER_OFERTA = "https://skk.erecruiter.pl/Offer.aspx?oid={oid}&cfg={cfg}"
+ER_MAKS_STRON = 30
+# Spolki panstwowe i zbrojeniowka rzadko pisza poziom w tytule ("Programista
+# Java", "Administrator IT") — taki tytul bierzemy jako junior/mid. Odpada
+# tylko to, co wprost jest wyzej.
+ER_WYZEJ = re.compile(r"starsz|architekt|ekspert|g[łl][óo]wn", re.I)
+# zbrojeniowka pisze po polsku: "teleinformatyczny", "informatyk"
+ER_IT = re.compile(LI_IT.pattern + r"|informaty|cyber", re.I)
+
+
+def _kariera_poziomy(tytul):
+    if ER_WYZEJ.search(tytul):
+        return []
+    return _linkedin_poziomy(tytul) or ([] if LI_NIE.search(tytul) else ["junior", "mid"])
+
+
+def _er_tabela(tekst):
+    """JSONP '({"htm": "..."})' -> HTML tabeli."""
+    tekst = tekst.strip()
+    return json.loads(tekst[tekst.index("("):].strip("();"))["htm"]
+
+
+def parsuj_kariera(tekst, cfg="", firma=""):
+    """Strona tabeli eRecruitera -> oferty IT bez wyzszego poziomu. Reszte pomija.
+
+    Kolumny ustawia kazda firma sama — rozpoznajemy je po naglowkach.
+    """
+    tabela = _er_tabela(tekst)
+    kolumny = re.findall(r"<th name='([^']*)'", tabela)
+    oferty = []
+    for atrybuty, wiersz in re.findall(r"<tr ([^>]*skkResult='offer'[^>]*)>(.*?)</tr>", tabela, re.S):
+        oid = re.search(r"offerId='(\d+)'", atrybuty).group(1)
+        komorki = [html.unescape(re.sub(r"<[^>]+>", "", k)).strip()
+                   for k in re.findall(r"<td[^>]*>(.*?)</td>", wiersz, re.S)]
+        k = dict(zip(kolumny, komorki))
+        tytul = k.get("skk_col_job_title", "")
+        dzial = k.get("skk_col_department", "")
+        poziomy = _kariera_poziomy(tytul)
+        if not poziomy or not (ER_IT.search(tytul) or ER_IT.search(dzial)):
+            continue
+        # kolumna dodatkowa (np. "Spolka" w Grupie PGZ) — jesli jest, to firma
+        dodatkowa = next((v for c, v in k.items() if c.startswith("skk_col_additional")), "")
+        data = k.get("skk_col_publish_date", "")
+        oferty.append(_oferta(
+            id=f"er-{oid}",
+            portal="kariera",
+            tytul=tytul,
+            firma=dodatkowa or firma or "?",
+            url=ER_OFERTA.format(oid=oid, cfg=cfg),
+            miasta=[m.strip() for m in k.get("skk_col_work_place", "").split(",")],
+            data=_ts(datetime.strptime(data, "%d.%m.%Y").strftime("%Y-%m-%dT00:00:00+01:00"))
+                 if re.fullmatch(r"\d\d\.\d\d\.\d{4}", data) else 0,
+            poziomy=poziomy,
+            kategoria=dzial,
+        ))
+    return oferty
+
+
+def pobierz_kariera():
+    wynik = {}
+    for cfg, firma in ER_FIRMY:
+        for strona in range(1, ER_MAKS_STRON + 1):
+            tekst = _pobierz(ER_URL.format(cfg=cfg, strona=strona))
+            for o in parsuj_kariera(tekst, cfg, firma):
+                wynik.setdefault(o["id"], o)
+            # ostatni wiersz tabeli niesie tp = liczba stron
+            ile = re.search(r"tp='(\d+)'", _er_tabela(tekst))
+            if not ile or strona >= int(ile.group(1)):
+                break
+            time.sleep(PRZERWA_S)
+    return [o for o in wynik.values() if _dla_mnie(o)]
+
+
 # nazwa portalu -> funkcja pobierajaca
 PORTALE = {
     "justjoin": pobierz_justjoin,
@@ -707,4 +888,6 @@ PORTALE = {
     "bulldog": pobierz_bulldog,
     "solid": pobierz_solid,
     "linkedin": pobierz_linkedin,
+    "kprm": pobierz_kprm,
+    "kariera": pobierz_kariera,
 }

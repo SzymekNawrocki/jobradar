@@ -35,6 +35,8 @@ zapytań zamiast tysięcy ofert. Lokalnie i tak dosiewamy staż/junior + Warszaw
 | Bulldogjob | `__NEXT_DATA__` (+ strona oferty) | `experienceLevel,junior,intern` | ✅ | ✅ |
 | SolidJobs | `solid.jobs/public-api/offers` (feed dla agregatorów) | lokalnie, `experienceLevel` | ✅ | ✅ |
 | LinkedIn | `linkedin.com/jobs-guest` (HTML, bez logowania) | lokalnie, po tytule | dzień | — |
+| Służba cywilna (KPRM) | `nabory.kprm.gov.pl` (HTML) | lokalnie, hierarchia stanowisk | — | ✅ |
+| Strony firm (eRecruiter) | widget `skk.erecruiter.pl` (EXATEL, Grupa PGZ) | lokalnie, po tytule | część | — |
 
 Wynik trafia do bazy **`jobradar.db`** (SQLite, `baza.py`):
 
@@ -55,6 +57,36 @@ Bez logowania ignoruje filtry poziomu, branży i „zdalnie”, więc bierzemy *
 Warszawę z ostatniego tygodnia**, a poziom i „czy to IT” rozpoznajemy po tytule.
 Fraza „praktyki IT” łapie ~95% takich ofert; więcej zapytań grozi blokadą (HTTP 429).
 
+**Służba cywilna** (ministerstwa, urzędy, CBZC, sektorowe CSIRT-y) nie wystawia się
+na portalach IT. Bierzemy Warszawę: branże „IT” i „informatyzacja” oraz frazy
+„cyberbezpieczeństwo”, „teleinformaty…”, „informaty…”. Tytuły są ogólne („specjalista”),
+więc o tym, czy to IT, decyduje też dział, a strona pokazuje go przy ofercie. Poziom
+wynika z hierarchii: referent / młodszy → junior, specjalista → junior/mid, starszy,
+główny, radca → odpada. Daty publikacji lista z filtrami nie podaje, więc liczy się
+pierwszy raz widziana. Nabory z pierwszego skanu są tylko pod „wszystkie”.
+
+**Strony firm** to widget eRecruitera, z którego korzysta wiele spółek skarbu państwa
+i zbrojeniówka. Zbrojeniówka rzadko pisze poziom w tytule („Programista Java”), więc
+tytuł bez poziomu = junior/mid, a odpadają starsi, architekci i kierownicy. Nowa firma:
+w źródle jej strony „Kariera” znajdź `erecruiter.pl/Code.ashx?cfg=<32 znaki>` i dopisz
+`(cfg, nazwa)` do `ER_FIRMY` w `portale.py`.
+
+W nawigacji są dwie osobne zakładki:
+
+- **🏛️ Firmy i państwówka**: na górze to, co radar ma teraz z urzędów i stron firm
+  (pogrupowane po pracodawcy), niżej katalog z `firmy.json` (cyber, wojsko i służby,
+  zbrojeniówka, państwowe instytucje i spółki): strona kariery, praktyki, LinkedIn
+  i oferty tej firmy z dowolnego portalu (dopasowanie po `aliasy`). Nową firmę dopisuje
+  się w `firmy.json`, bez restartu.
+- **👤 Rekruterzy**: wszystkie firmy z Twoich ofert, najpierw te, do których aplikowałeś
+  (pora na wiadomość do rekrutera). Przy każdej: rekruterzy / HR, ludzie z IT (polecenie)
+  i profil firmy na LinkedIn.
+
+Przy każdej ofercie jest **👤 rekruterzy**: wyszukiwarka osób na LinkedIn
+(rekruterzy / HR / talent acquisition tej firmy), otwierana na zalogowanym koncie.
+Nic nie pobieramy, to tylko link. Stałe kanały (WOC, WOT Cyberkomponent, kwalifikacje ECSC, staże MF), czyli rekrutacje
+ciągłe i programy, których nie da się skanować, są w katalogu firm.
+
 Każdy portal działa osobno — jak jeden zmieni stronę, reszta leci dalej, a skan
 pokaże `⚠ portal BŁĄD`. Wtedy: zapisz nową odpowiedź jako fixture w
 `tests/fixtury/`, popraw `parsuj_<portal>` w `portale.py`, aż przejdą testy:
@@ -70,9 +102,10 @@ jest opisany na górze `portale.py`.
 
 | Plik | Rola |
 |---|---|
-| `portale.py` | Portale (JustJoin, NoFluff, Pracuj, theprotocol, Bulldog, SolidJobs, LinkedIn) → wspólny format. |
+| `portale.py` | Portale (JustJoin, NoFluff, Pracuj, theprotocol, Bulldog, SolidJobs, LinkedIn, KPRM, strony firm) → wspólny format. |
 | `skan.py` | Skan wszystkich portali równolegle → baza. |
 | `baza.py` | SQLite: pamięć, scalanie duplikatów, wygasanie, moje decyzje. |
 | `app.py` | Serwer strony (stdlib `http.server`, tylko 127.0.0.1). |
-| `strona.html` | Strona: lista, szukajka, filtry, przyciski. |
+| `strona.html` | Strona: oferty, szukajka, filtry, zakładki Firmy i Rekruterzy. |
+| `firmy.json` | Katalog pracodawców (cyber, wojsko, zbrojeniówka, państwówka) z linkami. |
 | `jobradar.db` | Baza (auto, nie w repo). |
