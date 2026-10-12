@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JobRadar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Oxanium:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/static/style.css">
+<script type="module" src="/static/js/main.js"></script>
+</head>
+<body>
+<div class="app">
+
+  <aside class="bok">
+    <div class="radar" id="radar" aria-label="Radar: świeże oferty z ostatnich 7 dni"></div>
+    <div class="marka">
+      <h1>JobRadar</h1>
+      <p>Staż i junior w Warszawie lub zdalnie</p>
+    </div>
+    <div class="skan" id="skan" aria-live="polite"></div>
+    <div class="skan-akcje">
+      <button class="przycisk" data-akcja="skanuj" id="btn-skan">Skanuj teraz</button>
+      <button class="przycisk cichy" data-akcja="przejrzane" id="btn-przejrzane"
+              title="Zdejmij znacznik „nowe” ze wszystkich ofert">Przejrzane</button>
+    </div>
+    <nav class="nawigacja" id="nawigacja" aria-label="Widoki"></nav>
+    <dl class="skroty" aria-label="Skróty klawiszowe">
+      <div><dt>j k</dt><dd>następna, poprzednia</dd></div>
+      <div><dt>a</dt><dd>zaaplikowałem</dd></div>
+      <div><dt>h</dt><dd>ukryj lub przywróć</dd></div>
+      <div><dt>o</dt><dd>otwórz ogłoszenie</dd></div>
+      <div><dt>/</dt><dd>szukaj</dd></div>
+      <div><dt>1–5</dt><dd>widoki</dd></div>
+    </dl>
+  </aside>
+
+  <main class="srodek">
+    <header class="pasek" id="pasek"></header>
+    <div class="lista" id="lista" role="list"></div>
+  </main>
+
+  <section class="detal" id="detal" aria-live="polite"></section>
+
+  <div class="toasty" id="toasty" role="status"></div>
+</div>
+</body>
+</html>

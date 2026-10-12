@@ -71,6 +71,13 @@ tytuł bez poziomu = junior/mid, a odpadają starsi, architekci i kierownicy. No
 w źródle jej strony „Kariera” znajdź `erecruiter.pl/Code.ashx?cfg=<32 znaki>` i dopisz
 `(cfg, nazwa)` do `ER_FIRMY` w `portale.py`.
 
+Strona to trzy kolumny: radar z nawigacją, lista i szczegóły zaznaczonej pozycji
+(na węższym ekranie szczegóły wysuwają się z boku). Radar pokazuje świeże oferty
+z 7 dni: odległość od środka to wiek, sektor to portal, magenta to nowa. Klawiatura:
+`j`/`k` następna i poprzednia, `a` zaaplikowałem, `h` ukryj lub przywróć, `o` otwórz
+ogłoszenie, `/` szukaj, `1`–`5` widoki, `Esc` zamknij. Po zapisaniu aplikacji
+i ukryciu oferty pojawia się powiadomienie z „Cofnij”.
+
 **📋 Aplikacje** to dziennik. „✓ Zaaplikowałem” przy ofercie zakłada w nim wpis
 z kopią oferty (tytuł, firma, link, widełki, stack), który zostaje, gdy oferta zniknie
 z portalu. Każdy wpis ma etap (wysłane → odpowiedź → rozmowa HR → zadanie → oferta /
@@ -115,6 +122,6 @@ jest opisany na górze `portale.py`.
 | `skan.py` | Skan wszystkich portali równolegle → baza. |
 | `baza.py` | SQLite: pamięć, scalanie duplikatów, wygasanie, moje decyzje, dziennik aplikacji. |
 | `app.py` | Serwer strony (stdlib `http.server`, tylko 127.0.0.1). |
-| `strona.html` | Strona: oferty, szukajka, filtry, dziennik aplikacji, zakładki Firmy i Rekruterzy. |
+| `static/` | Strona: `index.html`, `style.css` i moduły `js/` (`main.js` spina widoki z `js/widoki/`, `api.js` rozmawia z serwerem). |
 | `firmy.json` | Katalog pracodawców (cyber, wojsko, zbrojeniówka, państwówka) z linkami. |
 | `jobradar.db` | Baza (auto, nie w repo). |

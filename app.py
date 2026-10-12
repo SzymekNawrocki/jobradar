@@ -7,7 +7,8 @@ niz pol godziny, w tle skanuje portale (~30 s, strona pokazuje "skanuje"
 i sama dociaga wynik), a potem co pol godziny, dopoki okno jest otwarte.
 
 Serwer to wbudowany http.server, slucha tylko na 127.0.0.1 (nikt z sieci
-sie nie dobije). Strona (strona.html) pobiera dane z /api/lista i /api/firmy,
+sie nie dobije). Strona (static/: index.html, style.css, moduly js) pobiera
+dane z /api/lista i /api/firmy,
 a klikniecia wysyla na /api/status, /api/przejrzane i /api/skan.
 Dziennik aplikacji: /api/aplikacje (+ /dodaj, /zmien, /usun).
 """
@@ -27,7 +28,9 @@ import baza
 import skan
 
 PORT = 8010
-STRONA = Path(__file__).parent / "strona.html"
+STATIC = (Path(__file__).parent / "static").resolve()  # strona: html, css, moduly js
+TYPY = {".html": "text/html", ".css": "text/css", ".js": "text/javascript",
+        ".svg": "image/svg+xml", ".json": "application/json"}
 FIRMY = Path(__file__).parent / "firmy.json"  # katalog do zakladki "Firmy i panstwowka"
 SKAN_STARSZY_NIZ_S = 30 * 60
 
@@ -63,6 +66,18 @@ def skanuj():
     return {"nowe": nowe, "bledy": [f"{n}: {b}" for n, _, b, _ in wyniki if b]}
 
 
+def plik_statyczny(sciezka):
+    """'/static/js/main.js' -> plik w static/ albo None. Nic spoza static/."""
+    if sciezka in ("/", "/index.html"):
+        return STATIC / "index.html"
+    if not sciezka.startswith("/static/"):
+        return None
+    plik = (STATIC / sciezka[len("/static/"):].split("?")[0]).resolve()
+    if STATIC not in plik.parents or not plik.is_file() or plik.suffix not in TYPY:
+        return None
+    return plik
+
+
 def skan_stary():
     with zamek:
         kiedy, _ = baza.ostatni_skan(db)
@@ -84,8 +99,9 @@ class Handler(BaseHTTPRequestHandler):
         return json.loads(self.rfile.read(dlugosc) or b"{}")
 
     def do_GET(self):
-        if self.path in ("/", "/index.html"):
-            self._wyslij(STRONA.read_bytes(), typ="text/html; charset=utf-8")
+        plik = plik_statyczny(self.path)
+        if plik:
+            self._wyslij(plik.read_bytes(), typ=TYPY[plik.suffix] + "; charset=utf-8")
         elif self.path == "/api/lista":
             with zamek:
                 self._wyslij(dane_listy())
