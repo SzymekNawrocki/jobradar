@@ -6,6 +6,9 @@
                 tytul = jedno ogloszenie z kilkoma linkami ("na 3 portalach").
                 Przebudowywane po kazdym skanie — z tego czyta strona.
   skany       — log skanow: kiedy, ktory portal, ile ofert, jaki blad.
+  aplikacje   — moj dziennik aplikacji: kopia oferty z chwili aplikowania
+                (zostaje, gdy oferta zniknie z portalu), etap, notatki,
+                kontakt, nastepny krok. Tez aplikacje spoza radaru.
 
 Wygasanie: kazdy skan to pelna lista entry-level z portalu, wiec oferty,
 ktorych w nim nie bylo, zniknely z portalu -> nieaktywne. Oferty z data
@@ -72,6 +75,26 @@ CREATE TABLE IF NOT EXISTS moje (
     kiedy     INTEGER NOT NULL
 );
 
+-- dziennik aplikacji. Wpis z radaru powstaje przy "Zaaplikowalem" i trzyma
+-- KOPIE oferty — ogloszenia wygasaja, a historia aplikacji ma zostac.
+CREATE TABLE IF NOT EXISTS aplikacje (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    idy           TEXT NOT NULL DEFAULT '[]',  -- surowe oferty z radaru; [] = dodana recznie
+    tytul         TEXT NOT NULL,
+    firma         TEXT NOT NULL,
+    url           TEXT NOT NULL DEFAULT '',
+    lokacja       TEXT NOT NULL DEFAULT '',
+    wid_od        INTEGER, wid_do INTEGER,
+    stack         TEXT NOT NULL DEFAULT '[]',
+    kategoria     TEXT NOT NULL DEFAULT '',
+    kiedy         INTEGER NOT NULL,            -- kiedy zaaplikowalem
+    etap          TEXT NOT NULL,
+    notatki       TEXT NOT NULL DEFAULT '',
+    kontakt       TEXT NOT NULL DEFAULT '',
+    nastepny_krok INTEGER,                     -- ts przypomnienia; NULL = brak
+    historia      TEXT NOT NULL DEFAULT '[]'   -- [{"etap": ..., "kiedy": ts}, ...]
+);
+
 CREATE TABLE IF NOT EXISTS ustawienia (
     nazwa   TEXT PRIMARY KEY,
     wartosc TEXT
@@ -81,6 +104,13 @@ CREATE TABLE IF NOT EXISTS ustawienia (
 POLA_LISTOWE = ("miasta", "poziomy", "tryby", "umowy", "stack")
 MIN_CZESC_PELNEGO = 0.5
 STATUSY = ("aplikowane", "ukryte")
+
+# etapy aplikacji, w kolejnosci; trzy ostatnie zamykaja sprawe
+ETAPY = ("wyslane", "odpowiedz", "rozmowa", "zadanie", "oferta", "odmowa", "cisza")
+ZAMKNIETE = ("oferta", "odmowa", "cisza")
+# po tylu dniach bez ruchu warto napisac do rekrutera
+FOLLOW_UP_S = 7 * 86400
+POLA_APLIKACJI = ("tytul", "firma", "url", "kiedy", "etap", "notatki", "kontakt", "nastepny_krok")
 
 
 def polacz(plik=PLIK, check_same_thread=True):
@@ -330,11 +360,105 @@ def ustaw_status(db, id_ogloszenia, status, teraz=None):
     if r is None:
         raise KeyError(id_ogloszenia)
     idy = json.loads(r["idy"])
+    teraz = teraz or int(time.time())
     with db:
         db.executemany("DELETE FROM moje WHERE id_oferty=?", [(i,) for i in idy])
         if status:
             db.executemany("INSERT INTO moje VALUES (?,?,?)",
-                           [(i, status, teraz or int(time.time())) for i in idy])
+                           [(i, status, teraz) for i in idy])
+        # "Zaaplikowalem" zaklada wpis w dzienniku, cofniecie go usuwa
+        istniejace = _aplikacje_ofert(db, idy)
+        if status == "aplikowane" and not istniejace:
+            _dodaj_z_ogloszenia(db, id_ogloszenia, teraz)
+        elif status != "aplikowane":
+            db.executemany("DELETE FROM aplikacje WHERE id=?", [(i,) for i in istniejace])
+
+
+# --------------------------------------------------------------------------
+# dziennik aplikacji
+# --------------------------------------------------------------------------
+
+def _aplikacje_ofert(db, idy):
+    """id wpisow dziennika, ktore dotycza ktorejkolwiek z tych surowych ofert."""
+    idy = set(idy)
+    return [r["id"] for r in db.execute("SELECT id, idy FROM aplikacje")
+            if idy & set(json.loads(r["idy"]))]
+
+
+def _dodaj_z_ogloszenia(db, id_ogloszenia, teraz):
+    g = db.execute("SELECT * FROM ogloszenia WHERE id=?", (id_ogloszenia,)).fetchone()
+    return _wstaw(db, teraz, idy=g["idy"], tytul=g["tytul"], firma=g["firma"], url=g["url"],
+                  lokacja=", ".join(json.loads(g["miasta"] or "[]")),
+                  wid_od=g["wid_od"], wid_do=g["wid_do"], stack=g["stack"] or "[]",
+                  kategoria=g["kategoria"] or "")
+
+
+def _wstaw(db, teraz, kiedy=None, **pola):
+    kiedy = kiedy or teraz
+    pola.update(kiedy=kiedy, etap="wyslane", nastepny_krok=kiedy + FOLLOW_UP_S,
+                historia=json.dumps([{"etap": "wyslane", "kiedy": kiedy}]))
+    kolumny = ", ".join(pola)
+    znaki = ", ".join("?" * len(pola))
+    return db.execute(f"INSERT INTO aplikacje ({kolumny}) VALUES ({znaki})",
+                      list(pola.values())).lastrowid
+
+
+def dodaj_aplikacje(db, tytul, firma, url="", notatki="", kiedy=None, teraz=None):
+    """Aplikacja spoza radaru (formularz WOC, nabor KPRM na papierze, polecenie)."""
+    if not (tytul or "").strip() or not (firma or "").strip():
+        raise ValueError("podaj stanowisko i firme")
+    with db:
+        return _wstaw(db, teraz or int(time.time()), kiedy=kiedy, tytul=tytul.strip(),
+                      firma=firma.strip(), url=(url or "").strip(), notatki=notatki or "")
+
+
+def zmien_aplikacje(db, id_aplikacji, teraz=None, **zmiany):
+    """Zmienia pola wpisu. Zmiana etapu trafia do historii; zamkniecie
+    sprawy (oferta / odmowa / cisza) kasuje przypomnienie."""
+    nieznane = set(zmiany) - set(POLA_APLIKACJI)
+    if nieznane:
+        raise ValueError(f"nieznane pola: {', '.join(sorted(nieznane))}")
+    r = db.execute("SELECT etap, historia FROM aplikacje WHERE id=?", (id_aplikacji,)).fetchone()
+    if r is None:
+        raise KeyError(id_aplikacji)
+    etap = zmiany.get("etap")
+    if etap is not None and etap != r["etap"]:
+        if etap not in ETAPY:
+            raise ValueError(f"nieznany etap: {etap}")
+        historia = json.loads(r["historia"])
+        historia.append({"etap": etap, "kiedy": teraz or int(time.time())})
+        zmiany["historia"] = json.dumps(historia)
+        if etap in ZAMKNIETE:
+            zmiany["nastepny_krok"] = None
+    if not zmiany:
+        return
+    with db:
+        db.execute(f"UPDATE aplikacje SET {', '.join(f'{k}=?' for k in zmiany)} WHERE id=?",
+                   [*zmiany.values(), id_aplikacji])
+
+
+def usun_aplikacje(db, id_aplikacji):
+    """Usuwa wpis; oferta z radaru wraca wtedy do "Do przejrzenia"."""
+    r = db.execute("SELECT idy FROM aplikacje WHERE id=?", (id_aplikacji,)).fetchone()
+    if r is None:
+        raise KeyError(id_aplikacji)
+    with db:
+        db.execute("DELETE FROM aplikacje WHERE id=?", (id_aplikacji,))
+        db.executemany("DELETE FROM moje WHERE id_oferty=? AND status='aplikowane'",
+                       [(i,) for i in json.loads(r["idy"])])
+
+
+def aplikacje(db):
+    """Caly dziennik. "aktywna" = oferta wciaz wisi na portalu (None dla recznych)."""
+    aktywne = {r[0] for r in db.execute("SELECT id FROM oferty WHERE aktywna=1")}
+    wynik = []
+    for r in db.execute("SELECT * FROM aplikacje ORDER BY kiedy DESC, id DESC"):
+        a = dict(r)
+        for k in ("idy", "stack", "historia"):
+            a[k] = json.loads(a[k])
+        a["aktywna"] = bool(aktywne & set(a["idy"])) if a["idy"] else None
+        wynik.append(a)
+    return wynik
 
 
 def ustawienie(db, nazwa):

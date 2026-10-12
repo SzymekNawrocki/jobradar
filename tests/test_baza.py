@@ -189,5 +189,78 @@ class MojeDecyzje(unittest.TestCase):
         self.assertEqual(nowe, {"Junior Python Developer": False, "Stażysta QA": True})
 
 
+class Dziennik(unittest.TestCase):
+    """Dziennik aplikacji: kopia oferty, etapy, przypomnienia, wpisy reczne."""
+
+    def setUp(self):
+        self.db = baza.polacz(":memory:")
+        baza.zapisz_skan(self.db, [wynik("pracuj", oferta("pr-1", "pracuj", wid_od=6000, wid_do=8000,
+                                                         miasta=["Warszawa"], stack=["Python"]))],
+                         teraz=T0)
+
+    def test_zaaplikowalem_zaklada_wpis_z_kopia_oferty(self):
+        baza.ustaw_status(self.db, "pr-1", "aplikowane", teraz=T0)
+        [a] = baza.aplikacje(self.db)
+        self.assertEqual((a["tytul"], a["firma"], a["lokacja"]),
+                         ("Junior Python Developer", "Acme sp. z o.o.", "Warszawa"))
+        self.assertEqual((a["wid_od"], a["wid_do"], a["stack"]), (6000, 8000, ["Python"]))
+        self.assertEqual(a["etap"], "wyslane")
+        self.assertEqual(a["nastepny_krok"], T0 + baza.FOLLOW_UP_S)  # follow-up za tydzien
+        self.assertTrue(a["aktywna"])
+
+    def test_drugie_klikniecie_nie_dubluje(self):
+        baza.ustaw_status(self.db, "pr-1", "aplikowane")
+        baza.ustaw_status(self.db, "pr-1", "aplikowane")
+        self.assertEqual(len(baza.aplikacje(self.db)), 1)
+
+    def test_cofniecie_usuwa_wpis(self):
+        baza.ustaw_status(self.db, "pr-1", "aplikowane")
+        baza.ustaw_status(self.db, "pr-1", None)
+        self.assertEqual(baza.aplikacje(self.db), [])
+
+    def test_wpis_zostaje_po_wygasnieciu_oferty(self):
+        baza.ustaw_status(self.db, "pr-1", "aplikowane")
+        baza.zapisz_skan(self.db, [wynik("pracuj", oferta("pr-2", "pracuj", tytul="Stażysta QA"))],
+                         teraz=T0 + DZIEN)
+        [a] = baza.aplikacje(self.db)
+        self.assertEqual(a["tytul"], "Junior Python Developer")
+        self.assertFalse(a["aktywna"])
+
+    def test_etapy_ida_do_historii_a_zamkniecie_kasuje_przypomnienie(self):
+        baza.ustaw_status(self.db, "pr-1", "aplikowane", teraz=T0)
+        [a] = baza.aplikacje(self.db)
+        baza.zmien_aplikacje(self.db, a["id"], etap="rozmowa", notatki="HR w czwartek", teraz=T0 + DZIEN)
+        baza.zmien_aplikacje(self.db, a["id"], etap="odmowa", teraz=T0 + 5 * DZIEN)
+        [a] = baza.aplikacje(self.db)
+        self.assertEqual([h["etap"] for h in a["historia"]], ["wyslane", "rozmowa", "odmowa"])
+        self.assertEqual(a["notatki"], "HR w czwartek")
+        self.assertIsNone(a["nastepny_krok"])
+
+    def test_zle_pola_i_etapy(self):
+        baza.ustaw_status(self.db, "pr-1", "aplikowane")
+        [a] = baza.aplikacje(self.db)
+        with self.assertRaises(ValueError):
+            baza.zmien_aplikacje(self.db, a["id"], etap="cokolwiek")
+        with self.assertRaises(ValueError):
+            baza.zmien_aplikacje(self.db, a["id"], idy="[]")
+
+    def test_reczny_wpis_spoza_radaru(self):
+        id_ = baza.dodaj_aplikacje(self.db, "Analityk SOC", "Wojska Obrony Cyberprzestrzeni",
+                                   kiedy=T0 - DZIEN, teraz=T0)
+        [a] = baza.aplikacje(self.db)
+        self.assertEqual(a["id"], id_)
+        self.assertEqual(a["kiedy"], T0 - DZIEN)
+        self.assertIsNone(a["aktywna"])
+        with self.assertRaises(ValueError):
+            baza.dodaj_aplikacje(self.db, " ", "Firma")
+
+    def test_usuniecie_wpisu_zwraca_oferte_do_przejrzenia(self):
+        baza.ustaw_status(self.db, "pr-1", "aplikowane")
+        [a] = baza.aplikacje(self.db)
+        baza.usun_aplikacje(self.db, a["id"])
+        self.assertEqual(baza.aplikacje(self.db), [])
+        self.assertIsNone(baza.lista(self.db)[0]["status"])
+
+
 if __name__ == "__main__":
     unittest.main()

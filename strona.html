@@ -20,6 +20,7 @@
     }
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body { background: var(--tlo); color: var(--tekst); margin: 0;
          font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
   main { max-width: 920px; margin: 0 auto; padding: 20px 16px 60px; }
@@ -101,6 +102,31 @@
     .oferta { grid-template-columns: 1fr; }
     .akcje { grid-column: 1; grid-row: auto; flex-direction: row; }
   }
+
+  .statystyki { font-size: 13px; color: var(--szary); margin-bottom: 10px; }
+  .statystyki b { color: var(--tekst); }
+  .pilne { color: var(--zolty); }
+  .blad { color: var(--czerwony); font-size: 13px; }
+  .aplikacja { background: var(--karta); border: 1px solid var(--ramka); border-radius: 8px;
+               padding: 12px 14px; margin: 8px 0; display: grid; gap: 8px; }
+  .aplikacja.pilna { border-left: 3px solid var(--zolty); }
+  .aplikacja.zamknieta { opacity: .75; }
+  .aplikacja .pola { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+  .aplikacja label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--szary); }
+  .aplikacja label.szeroka { flex: 1; min-width: 220px; }
+  .aplikacja input, .aplikacja select, .aplikacja textarea {
+    background: var(--tlo); color: var(--tekst); border: 1px solid var(--ramka);
+    border-radius: 6px; padding: 6px 8px; font: inherit; }
+  .aplikacja textarea { min-height: 60px; resize: vertical; width: 100%; }
+  .aplikacja .dol { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12px; }
+  .aplikacja .historia { color: var(--szary); }
+  .aplikacja .zapisano { color: var(--zielony); }
+  .aplikacja .li { color: var(--szary); text-decoration: none; }
+  .aplikacja .li:hover { color: var(--akcent); }
+  .odstep { flex: 1; }
+  button.maly { font-size: 12px; padding: 4px 10px; }
+  .znacznik.szary { color: var(--szary); }
+  .znacznik.pilne { color: var(--zolty); }
 </style>
 </head>
 <body>
@@ -117,7 +143,7 @@
 
   <nav class="zakladki">
     <button data-zakladka="" class="on" onclick="zakladka(this)">Do przejrzenia</button>
-    <button data-zakladka="aplikowane" onclick="zakladka(this)">Zaaplikowane</button>
+    <button class="widok" id="btn-aplikacje" data-widok="aplikacje" onclick="widok(this)">📋 Aplikacje</button>
     <button data-zakladka="ukryte" onclick="zakladka(this)">Ukryte</button>
     <span class="odstep"></span>
     <button class="widok" data-widok="firmy" onclick="widok(this)">🏛️ Firmy i państwówka</button>
@@ -147,6 +173,34 @@
   <div id="puste" hidden>Nic tu nie ma.</div>
   </section>
 
+  <section id="widok-aplikacje" hidden>
+    <p class="opis-widoku">Twój dziennik: każda aplikacja z etapem, notatkami, kontaktem i terminem
+      następnego kroku. „✓ Zaaplikowałem” przy ofercie dodaje ją tu sama, z przypomnieniem o follow-upie
+      za tydzień. Wpis zostaje, nawet gdy oferta zniknie z portalu.</p>
+    <div id="statystyki-aplikacji" class="statystyki"></div>
+    <div class="filtry">
+      <button class="chip filtr-apl on" data-filtr="toku" onclick="filtrujAplikacje(this)">w toku</button>
+      <button class="chip filtr-apl" data-filtr="zamkniete" onclick="filtrujAplikacje(this)">zamknięte</button>
+      <button class="chip filtr-apl" data-filtr="wszystkie" onclick="filtrujAplikacje(this)">wszystkie</button>
+      <span class="odstep"></span>
+      <button onclick="pokazFormularz()">➕ Dodaj ręcznie</button>
+    </div>
+    <form id="formularz-aplikacji" class="aplikacja" hidden onsubmit="dodajRecznie(event)">
+      <div class="pola">
+        <label class="szeroka">Stanowisko <input name="tytul" required placeholder="np. Analityk SOC"></label>
+        <label class="szeroka">Firma / urząd <input name="firma" required placeholder="np. Wojska Obrony Cyberprzestrzeni"></label>
+        <label>Kiedy <input name="kiedy" type="date"></label>
+        <label class="szeroka">Link (opcjonalnie) <input name="url" type="url" placeholder="https://…"></label>
+      </div>
+      <textarea name="notatki" placeholder="Notatki (opcjonalnie): skąd, przez kogo, co wysłałeś…"></textarea>
+      <div class="dol"><span class="odstep"></span>
+        <button type="button" onclick="pokazFormularz()">Anuluj</button>
+        <button type="submit" class="wazny">Dodaj</button></div>
+    </form>
+    <div id="blad-aplikacji" class="blad"></div>
+    <div id="lista-aplikacji"></div>
+  </section>
+
   <section id="widok-firmy" hidden>
     <p class="opis-widoku">Pracodawcy z cyber, wojska, zbrojeniówki i państwówki: strony kariery,
       praktyki, ludzie na LinkedIn i oferty, które radar ma teraz od nich. Katalog jest w <code>firmy.json</code>.</p>
@@ -172,7 +226,7 @@
 let OFERTY = [];
 let aktywnaZakladka = "";
 const tryby = new Set();
-let aktywnyWidok = "oferty";  // "oferty" | "firmy" | "rekruterzy"
+let aktywnyWidok = "oferty";  // "oferty" | "aplikacje" | "firmy" | "rekruterzy"
 let KATALOG = null;          // firmy.json, wczytany przy pierwszym wejsciu w zakladke
 let maksDni = 7;  // najwazniejszy filtr: swiezosc (0 = bez limitu)
 
@@ -239,7 +293,7 @@ function rysuj() {
   const ile = s => OFERTY.filter(o => (o.status || "") === s).length;
   const nowych = OFERTY.filter(o => o.nowe && !o.status).length;
   document.querySelectorAll(".zakladki button[data-zakladka]").forEach(b => {
-    const nazwy = { "": "Do przejrzenia", aplikowane: "Zaaplikowane", ukryte: "Ukryte" };
+    const nazwy = { "": "Do przejrzenia", ukryte: "Ukryte" };
     b.textContent = `${nazwy[b.dataset.zakladka]} (${ile(b.dataset.zakladka)})`;
   });
   document.getElementById("licznik").textContent =
@@ -305,10 +359,11 @@ function linkiLinkedin(firma) {
 
 function widok(btn) {
   aktywnyWidok = btn ? btn.dataset.widok : "oferty";
-  for (const w of ["oferty", "firmy", "rekruterzy"])
+  for (const w of ["oferty", "aplikacje", "firmy", "rekruterzy"])
     document.getElementById("widok-" + w).hidden = w !== aktywnyWidok;
   document.querySelectorAll(".zakladki button").forEach(b =>
     b.classList.toggle("on", btn ? b === btn : b.dataset.zakladka === aktywnaZakladka));
+  if (aktywnyWidok === "aplikacje") rysujAplikacje();
   if (aktywnyWidok === "firmy") rysujFirmy();
   if (aktywnyWidok === "rekruterzy") rysujRekruterow();
 }
@@ -481,7 +536,189 @@ async function status(id, nowy) {
   o.status = nowy;  // od razu na ekranie, zapis w tle
   rysuj();
   try { await wyslij("/api/status", { id, status: nowy }); }
-  catch (e) { o.status = stary; rysuj(); console.error(e); }
+  catch (e) { o.status = stary; rysuj(); console.error(e); return; }
+  if (nowy === "aplikowane" || stary === "aplikowane") wczytajAplikacje();
+}
+
+// --------------------------------------------------------------------------
+// dziennik aplikacji
+// --------------------------------------------------------------------------
+
+let APLIKACJE = [];
+let filtrAplikacji = "toku";  // "toku" | "zamkniete" | "wszystkie"
+
+const ETAPY = {
+  wyslane: "📤 Wysłane", odpowiedz: "💬 Odpowiedź / kontakt", rozmowa: "🗣️ Rozmowa HR",
+  zadanie: "🧩 Zadanie / techniczna", oferta: "🎉 Oferta", odmowa: "✕ Odmowa",
+  cisza: "🔇 Brak odpowiedzi",
+};
+const ZAMKNIETE = new Set(["oferta", "odmowa", "cisza"]);
+const DALEJ_NIZ_WYSLANE = new Set(["odpowiedz", "rozmowa", "zadanie", "oferta", "odmowa"]);
+const ROZMOWA_LUB_DALEJ = new Set(["rozmowa", "zadanie", "oferta"]);
+
+const teraz = () => Date.now() / 1000;
+const doZrobienia = a => !ZAMKNIETE.has(a.etap) && a.nastepny_krok && a.nastepny_krok <= teraz();
+
+async function wczytajAplikacje() {
+  try { APLIKACJE = await (await fetch("/api/aplikacje")).json(); }
+  catch (e) { console.error(e); return; }
+  etykietaAplikacji();
+  if (aktywnyWidok === "aplikacje") rysujAplikacje();
+}
+
+function etykietaAplikacji() {
+  const pilne = APLIKACJE.filter(doZrobienia).length;
+  document.getElementById("btn-aplikacje").textContent =
+    `📋 Aplikacje (${APLIKACJE.length})` + (pilne ? ` · ⏰ ${pilne}` : "");
+}
+
+// "2026-10-12" <-> ts (lokalna polnoc) dla <input type=date>
+function naDate(ts) {
+  if (!ts) return "";
+  const d = new Date(ts * 1000);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+const zDaty = s => s ? Math.floor(new Date(s + "T00:00").getTime() / 1000) : null;
+const krotko = ts => new Date(ts * 1000).toLocaleDateString("pl-PL", { day: "numeric", month: "short" });
+
+function ileDni(ts) {
+  const dni = dniTemu(ts);
+  return dni <= 0 ? "dziś" : dni === 1 ? "wczoraj" : `${dni} dni temu`;
+}
+
+function statystykiAplikacji() {
+  const n = APLIKACJE.length;
+  const etapy = a => new Set([a.etap, ...a.historia.map(h => h.etap)]);
+  const odp = APLIKACJE.filter(a => [...etapy(a)].some(e => DALEJ_NIZ_WYSLANE.has(e))).length;
+  const rozm = APLIKACJE.filter(a => [...etapy(a)].some(e => ROZMOWA_LUB_DALEJ.has(e))).length;
+  const ofert = APLIKACJE.filter(a => a.etap === "oferta").length;
+  const proc = x => n ? ` (${Math.round(100 * x / n)}%)` : "";
+  const pilne = APLIKACJE.filter(doZrobienia).length;
+  return `Wysłane: <b>${n}</b> · odpowiedzi: <b>${odp}</b>${proc(odp)} · rozmowy: <b>${rozm}</b>${proc(rozm)}` +
+    ` · oferty: <b>${ofert}</b>` + (pilne ? ` · <span class="pilne">⏰ do zrobienia: ${pilne}</span>` : "");
+}
+
+function rysujAplikacje() {
+  document.getElementById("statystyki-aplikacji").innerHTML = statystykiAplikacji();
+  const lista = APLIKACJE
+    .filter(a => filtrAplikacji === "wszystkie" || (filtrAplikacji === "zamkniete") === ZAMKNIETE.has(a.etap))
+    // najpierw zalegle przypomnienia, potem w toku wg terminu, na koncu zamkniete
+    .sort((a, b) => doZrobienia(b) - doZrobienia(a)
+      || ZAMKNIETE.has(a.etap) - ZAMKNIETE.has(b.etap)
+      || (a.nastepny_krok || Infinity) - (b.nastepny_krok || Infinity)
+      || b.kiedy - a.kiedy);
+  document.getElementById("lista-aplikacji").innerHTML = lista.map(kartaAplikacji).join("")
+    || `<div id="puste">${APLIKACJE.length ? "Nic w tym filtrze." :
+        "Jeszcze nic. Kliknij „✓ Zaaplikowałem” przy ofercie albo dodaj aplikację ręcznie."}</div>`;
+}
+
+function kartaAplikacji(a) {
+  const tytul = a.url
+    ? `<a class="tytul" href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.tytul)}</a>`
+    : `<span class="tytul">${esc(a.tytul)}</span>`;
+  const znikla = a.aktywna === false ? '<span class="znacznik szary">oferta zniknęła z portalu</span>' : "";
+  const reczna = a.aktywna === null ? '<span class="znacznik szary">dodana ręcznie</span>' : "";
+  const pilne = doZrobienia(a) ? '<span class="znacznik pilne">⏰ czas na follow-up</span>' : "";
+  const meta = [esc(a.firma), a.kategoria ? esc(a.kategoria) : "", widelki(a), esc(a.lokacja),
+                `aplikowano ${krotko(a.kiedy)} (${ileDni(a.kiedy)})`].filter(Boolean).join(" · ");
+  const historia = a.historia.map(h => `${ETAPY[h.etap] || h.etap} ${krotko(h.kiedy)}`).join(" → ");
+  return `
+  <article class="aplikacja${ZAMKNIETE.has(a.etap) ? " zamknieta" : ""}${doZrobienia(a) ? " pilna" : ""}">
+    <div>${tytul} ${pilne}${znikla}${reczna}</div>
+    <div class="meta">${meta}</div>
+    <div class="pola">
+      <label>Etap
+        <select onchange="zmienAplikacje(${a.id}, { etap: this.value })">
+          ${Object.entries(ETAPY).map(([k, v]) => `<option value="${k}"${k === a.etap ? " selected" : ""}>${v}</option>`).join("")}
+        </select></label>
+      <label>Następny krok
+        <input type="date" value="${naDate(a.nastepny_krok)}"
+               onchange="zmienAplikacje(${a.id}, { nastepny_krok: zDaty(this.value) })"></label>
+      <label class="szeroka">Kontakt
+        <input type="text" value="${esc(a.kontakt)}" placeholder="np. Anna Kowalska, HR · anna@firma.pl · link do profilu"
+               oninput="zmienPozniej(${a.id}, 'kontakt', this.value)"></label>
+    </div>
+    <textarea placeholder="Notatki: o co pytali, co obiecali, czego się douczyć, wynagrodzenie…"
+              oninput="zmienPozniej(${a.id}, 'notatki', this.value)">${esc(a.notatki)}</textarea>
+    <div class="dol">
+      <span class="historia">${historia}</span>
+      <span class="zapisano" id="zapisano-${a.id}"></span>
+      <span class="odstep"></span>
+      <a class="li" href="${esc(rekruterzy(a.firma))}" target="_blank" rel="noopener">👤 rekruterzy</a>
+      <button class="maly" onclick="usunAplikacje(${a.id}, this)">🗑 Usuń</button>
+    </div>
+  </article>`;
+}
+
+async function zmienAplikacje(id, pola, odrysuj = true) {
+  const a = APLIKACJE.find(x => x.id === id);
+  try {
+    await wyslij("/api/aplikacje/zmien", { id, ...pola });
+  } catch (e) {
+    alertBlad(e);
+    return;
+  }
+  if (odrysuj) await wczytajAplikacje();
+  else Object.assign(a, pola);
+  const z = document.getElementById("zapisano-" + id);
+  if (z) { z.textContent = "✓ zapisano"; setTimeout(() => z.textContent = "", 1500); }
+}
+
+// notatki i kontakt zapisujemy chwile po ostatnim klawiszu, bez przerysowania
+// (przerysowanie zgubiloby kursor w polu)
+const czekajace = {};
+function zmienPozniej(id, pole, wartosc) {
+  const k = `${id}/${pole}`;
+  clearTimeout(czekajace[k]);
+  czekajace[k] = setTimeout(() => zmienAplikacje(id, { [pole]: wartosc }, false), 600);
+}
+
+// usuwanie na dwa klikniecia — bez okienka confirm()
+async function usunAplikacje(id, btn) {
+  if (!btn.dataset.pewne) {
+    btn.dataset.pewne = "1";
+    btn.textContent = "Na pewno? Kliknij jeszcze raz";
+    setTimeout(() => { delete btn.dataset.pewne; btn.textContent = "🗑 Usuń"; }, 3000);
+    return;
+  }
+  try { await wyslij("/api/aplikacje/usun", { id }); }
+  catch (e) { alertBlad(e); return; }
+  await Promise.all([wczytajAplikacje(), wczytaj()]);  // oferta wraca do "Do przejrzenia"
+}
+
+function filtrujAplikacje(btn) {
+  filtrAplikacji = btn.dataset.filtr;
+  document.querySelectorAll(".filtr-apl").forEach(b => b.classList.toggle("on", b === btn));
+  rysujAplikacje();
+}
+
+function pokazFormularz() {
+  const f = document.getElementById("formularz-aplikacji");
+  f.hidden = !f.hidden;
+  if (!f.hidden) {
+    f.elements.kiedy.value = naDate(teraz());
+    f.elements.tytul.focus();
+  }
+}
+
+async function dodajRecznie(e) {
+  e.preventDefault();
+  const f = e.target;
+  try {
+    await wyslij("/api/aplikacje/dodaj", {
+      tytul: f.elements.tytul.value, firma: f.elements.firma.value, url: f.elements.url.value,
+      notatki: f.elements.notatki.value, kiedy: zDaty(f.elements.kiedy.value),
+    });
+  } catch (err) { alertBlad(err); return; }
+  f.reset();
+  f.hidden = true;
+  await wczytajAplikacje();
+}
+
+function alertBlad(e) {
+  const el = document.getElementById("blad-aplikacji");
+  el.textContent = "⚠ Nie zapisano: " + e.message;
+  setTimeout(() => el.textContent = "", 5000);
 }
 
 async function przejrzane() {
@@ -504,6 +741,7 @@ async function skanuj() {
 }
 
 wczytaj();
+wczytajAplikacje();
 // serwer skanuje sam co 30 min — strona dociaga wynik co 5 min (filtry zostaja)
 setInterval(wczytaj, 5 * 60 * 1000);
 </script>

@@ -71,7 +71,16 @@ tytuł bez poziomu = junior/mid, a odpadają starsi, architekci i kierownicy. No
 w źródle jej strony „Kariera” znajdź `erecruiter.pl/Code.ashx?cfg=<32 znaki>` i dopisz
 `(cfg, nazwa)` do `ER_FIRMY` w `portale.py`.
 
-W nawigacji są dwie osobne zakładki:
+**📋 Aplikacje** to dziennik. „✓ Zaaplikowałem” przy ofercie zakłada w nim wpis
+z kopią oferty (tytuł, firma, link, widełki, stack), który zostaje, gdy oferta zniknie
+z portalu. Każdy wpis ma etap (wysłane → odpowiedź → rozmowa HR → zadanie → oferta /
+odmowa / brak odpowiedzi, z historią zmian), notatki i kontakt zapisywane w locie oraz
+datę następnego kroku. Domyślnie za tydzień od aplikacji; gdy minie, wpis dostaje
+⏰ „czas na follow-up”, a licznik pojawia się w nawigacji. Aplikacje spoza radaru
+(formularz WOC, nabór KPRM na papierze, polecenie) dodaje się ręcznie. Na górze
+statystyki: ile odpowiedzi i rozmów na wysłane.
+
+Obok są dwie zakładki do szukania kontaktów:
 
 - **🏛️ Firmy i państwówka**: na górze to, co radar ma teraz z urzędów i stron firm
   (pogrupowane po pracodawcy), niżej katalog z `firmy.json` (cyber, wojsko i służby,
@@ -104,8 +113,8 @@ jest opisany na górze `portale.py`.
 |---|---|
 | `portale.py` | Portale (JustJoin, NoFluff, Pracuj, theprotocol, Bulldog, SolidJobs, LinkedIn, KPRM, strony firm) → wspólny format. |
 | `skan.py` | Skan wszystkich portali równolegle → baza. |
-| `baza.py` | SQLite: pamięć, scalanie duplikatów, wygasanie, moje decyzje. |
+| `baza.py` | SQLite: pamięć, scalanie duplikatów, wygasanie, moje decyzje, dziennik aplikacji. |
 | `app.py` | Serwer strony (stdlib `http.server`, tylko 127.0.0.1). |
-| `strona.html` | Strona: oferty, szukajka, filtry, zakładki Firmy i Rekruterzy. |
+| `strona.html` | Strona: oferty, szukajka, filtry, dziennik aplikacji, zakładki Firmy i Rekruterzy. |
 | `firmy.json` | Katalog pracodawców (cyber, wojsko, zbrojeniówka, państwówka) z linkami. |
 | `jobradar.db` | Baza (auto, nie w repo). |

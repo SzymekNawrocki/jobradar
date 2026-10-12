@@ -9,6 +9,7 @@ i sama dociaga wynik), a potem co pol godziny, dopoki okno jest otwarte.
 Serwer to wbudowany http.server, slucha tylko na 127.0.0.1 (nikt z sieci
 sie nie dobije). Strona (strona.html) pobiera dane z /api/lista i /api/firmy,
 a klikniecia wysyla na /api/status, /api/przejrzane i /api/skan.
+Dziennik aplikacji: /api/aplikacje (+ /dodaj, /zmien, /usun).
 """
 
 import json
@@ -88,6 +89,9 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/lista":
             with zamek:
                 self._wyslij(dane_listy())
+        elif self.path == "/api/aplikacje":
+            with zamek:
+                self._wyslij(baza.aplikacje(db))
         elif self.path == "/api/firmy":
             self._wyslij(FIRMY.read_bytes())
         else:
@@ -102,6 +106,17 @@ class Handler(BaseHTTPRequestHandler):
             with zamek:
                 if self.path == "/api/status":
                     baza.ustaw_status(db, cialo["id"], cialo.get("status"))
+                    self._wyslij({"ok": True})
+                elif self.path == "/api/aplikacje/dodaj":
+                    id_ = baza.dodaj_aplikacje(db, cialo.get("tytul"), cialo.get("firma"),
+                                               cialo.get("url"), cialo.get("notatki"),
+                                               cialo.get("kiedy"))
+                    self._wyslij({"id": id_})
+                elif self.path == "/api/aplikacje/zmien":
+                    baza.zmien_aplikacje(db, cialo.pop("id"), **cialo)
+                    self._wyslij({"ok": True})
+                elif self.path == "/api/aplikacje/usun":
+                    baza.usun_aplikacje(db, cialo["id"])
                     self._wyslij({"ok": True})
                 elif self.path == "/api/przejrzane":
                     baza.zapisz_ustawienie(db, "przejrzane", int(time.time()))
